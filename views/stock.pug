@@ -1,0 +1,74 @@
+extends layout
+
+block content
+  .container-fluid.py-4
+    .row
+      // Left Column: Register New Stock
+      .col-lg-4
+        .glass-card.mb-4
+          img.hero-img.mb-3(src="/images/hardware-shelf.jpg" style="height: 150px; width: 100%; object-fit: cover; border-radius: 10px;")
+          h4.text-cyan.mb-4  New Stock Item
+          
+          form(action="/stock/add" method="post")
+            .mb-3
+              label.label-cyan Item Name
+              input.form-control.blue-input(type="text" name="itemName" placeholder="e.g. PVC Pipe 4inch" required)
+            
+            .mb-3
+              label.label-cyan Category
+              select.form-select.blue-input(name="category")
+                option(value="" disabled selected) -- Select Category --
+                option(value="Lumber & Wood") Lumber & Wood
+                option(value="Steel & Rebar") Steel & Rebar
+                option(value="Cement & Aggregates") Cement & Aggregates
+                option(value="Plumbing") Plumbing
+                option(value="Paint & Finishes") Paint & Finishes
+                option(value="Tools") Tools
+            
+            .row
+              .col-md-6.mb-3
+                label.label-cyan Quantity
+                input.form-control.blue-input(type="number" name="quantity" required)
+              .col-md-6.mb-3
+                label.label-cyan Unit
+                input.form-control.blue-input(type="text" name="unit" placeholder="pcs/bags")
+            
+            .row
+              .col-md-6.mb-3
+                label.label-cyan Cost Price (UGX)
+                input.form-control.blue-input(type="number" name="costPrice" required)
+              .col-md-6.mb-3
+                label.label-cyan Retail Price (UGX)
+                input.form-control.blue-input(type="number" name="retailPrice" required)
+            
+            button.btn.btn-cyan.w-100.mt-3(type="submit") Register Stock
+
+      // Right Column: Current Inventory List
+      .col-lg-8
+        .glass-card
+          h4.text-white.mb-4 📋 Current Inventory
+          .table-responsive
+            table.table.table-hover.text-white
+              thead
+                tr.text-cyan
+                  th Item Name
+                  th Category
+                  th Stock Level
+                  th Cost (UGX)
+                  th Status
+              tbody
+                each item in inventory
+                  tr(style="border-bottom: 1px solid rgba(0, 242, 255, 0.1)")
+                    td= item.name
+                    td= item.category
+                    td= item.quantity
+                    td= item.cost.toLocaleString()
+                    td
+                      if item.quantity < 10
+                        span.badge.bg-danger Low Stock
+                      else
+                        span.badge.bg-success In Stock
+                
+                if inventory.length == 0
+                  tr
+                    td.text-center(colspan="5") No items registered yet.

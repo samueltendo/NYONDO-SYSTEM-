@@ -1,0 +1,60 @@
+extends layout
+
+block content
+  .container-fluid
+    .d-flex.justify-content-between.align-items-center.mb-4
+      h1.text-cyan Nyondo Management Reports
+      span.text-white-50 Role: #{user ? user.role.toUpperCase() : 'GUEST'}
+
+    //- ADMIN/MANAGER TOP LEVEL STATS
+    if user && (user.role === 'manager' || user.role === 'admin')
+      .row.g-4.mb-5
+        .col-md-4
+          .glass-card.text-center
+            h6.text-white-50 TOTAL SALES REVENUE
+            h2.text-cyan UGX #{stats.revenue.toLocaleString()}
+        .col-md-4
+          .glass-card.text-center
+            h6.text-white-50 INVENTORY ASSET VALUE (At Cost)
+            h2.text-cyan UGX #{stats.stockValue.toLocaleString()}
+        .col-md-4
+          .glass-card.text-center
+            h6.text-white-50 TOTAL ITEMS IN STOCK
+            h2.text-cyan #{stats.itemCount} Units
+
+    .row.g-4
+      //- MAIN COLLECTION: SALES HISTORY
+      .col-lg-8
+        .glass-card
+          h4.text-cyan.mb-3 Global Sales Log
+          table.nyondo-table
+            thead
+              tr
+                th Date
+                th Item
+                th Qty
+                th Staff
+                th Total (UGX)
+            tbody
+              each s in sales
+                tr
+                  td #{s.saleDate.toLocaleDateString()}
+                  td #{s.itemName}
+                  td #{s.quantitySold}
+                  td #{s.salesAttendant ? s.salesAttendant.fullname : 'N/A'}
+                  td.text-cyan UGX #{s.totalAmount.toLocaleString()}
+
+      //- STOCK ALERTS (Visible to all)
+      .col-lg-4
+        .glass-card
+          h4.text-cyan.mb-3 Stock Status & Alerts
+          each item in inventory
+            .notification-item.mb-2(style=`border-left-color: ${item.quantity < 20 ? '#ff3e3e' : '#00f2ff'}`)
+              p.mb-0.text-white #{item.itemName}
+              small.text-white-50 Current Stock: #{item.quantity}
+              if item.quantity < 20
+                span.badge.ms-2(style="background: var(--error-red); font-size: 0.7rem;") RESTOCK REQUIRED
+
+    //- ACTIONS
+    .mt-4.text-end
+      button.btn-cyan(onclick="window.print()")  Export PDF Report

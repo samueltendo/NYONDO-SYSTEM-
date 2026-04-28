@@ -1,0 +1,56 @@
+extends layout
+
+block content
+  .container-fluid
+    h1.text-cyan Supplier Credit Management
+    p.text-white-50 Track debts and upcoming payments to hardware suppliers.
+
+    .row.g-4
+      //- Form: Record New Credit
+      .col-lg-4
+        .glass-card
+          h4.text-cyan New Credit Record
+          form(action="/credit/add" method="POST")
+            .form-group.mb-3
+              label Supplier Name
+              input.form-control(type="text" name="supplierName" required)
+            .form-group.mb-3
+              label Item/Description
+              input.form-control(type="text" name="item" required)
+            .form-group.mb-3
+              label Amount Owed (UGX)
+              input.form-control.blue-input(type="number" name="amountOwed" required)
+            .form-group.mb-3
+              label Due Date
+              input.form-control(type="date" name="dueDate" required)
+            button.btn-cyan.w-100(type="submit") Save Credit Record
+
+      //- Table: Credit List
+      .col-lg-8
+        .glass-card
+          h4.text-cyan Active Credits
+          table.nyondo-table
+            thead
+              tr
+                th Supplier
+                th Item
+                th Amount (UGX)
+                th Due Date
+                th Status
+                th Action
+            tbody
+              each c in credits
+                tr
+                  td #{c.supplierName}
+                  td #{c.item}
+                  td.text-cyan #{c.amountOwed.toLocaleString()}
+                  td #{c.dueDate.toLocaleDateString()}
+                  td
+                    span(style=`color: ${c.status === 'Paid' ? 'var(--success-green)' : 'orange'}`) #{c.status}
+                  td
+                    if c.status === 'Pending'
+                      form(action=`/credit/pay/${c._id}` method="POST")
+                        button.btn-cyan(style="padding: 5px 10px; font-size: 0.7rem;") MARK PAID
+                    else
+                      span.text-muted Completed
+

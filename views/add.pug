@@ -1,0 +1,81 @@
+extends layout
+
+block content
+    .container
+        //- Header Section
+        h1.text-cyan.mb-4 #{title}
+
+        //- New Stock Registration Form (Store Manager Role)
+        .glass-card
+            h2.text-cyan Register New Stock
+            hr(style="border: 0.5px solid var(--border-color); margin-bottom: 20px;")
+            
+            if error
+                .error-msg(style="background: rgba(255, 62, 62, 0.1); padding: 10px; border-radius: 5px; margin-bottom: 15px; border: 1px solid var(--error-red);")
+                    | #{error}
+
+            form(action="/stock/add" method="post")
+                .module-grid(style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); align-items: end;")
+                    .form-group
+                        label Item Name
+                        input.form-control(type="text" name="itemName" placeholder="e.g. Deformed Bar" required)
+                    
+                    .form-group
+                        label Category
+                        select.form-control(name="category" required)
+                            option(value="" disabled selected) Select Category
+                            option(value="Steel") Steel
+                            option(value="Cement") Cement
+                            option(value="Roofing") Roofing
+                            option(value="Plumbing") Plumbing
+                            option(value="Tiles") Tiles 
+                            option(value="paint") Paint 
+                            option(value="Nails") Nails 
+                            option(value="Iron Sheets") Iron Sheets
+                            option(value="Machinery") Machinery
+                            option(value="Pipes") Pipes
+                            Option(Value="Paving Blocks") Paving Blocks
+                            option(value="Other") Other
+                    
+                    .form-group
+                        label Quantity
+                        input.form-control(type="number" name="quantity" min="1" placeholder="0" required)
+                    
+                    .form-group
+                        label Cost Price (UGX)
+                        input.form-control.blue-input(type="number" name="costPrice" placeholder="Price bought" required)
+                    
+                    .form-group
+                        label Retail Price (UGX)
+                        input.form-control.blue-input(type="number" name="retailPrice" placeholder="Price to sell" required)
+
+                div(style="margin-top: 20px; text-align: right;")
+                    button.btn-cyan(type="submit") Save Item to Stock
+
+        //- Inventory Display Table
+        .glass-card
+            h2.text-cyan Current Inventory Levels
+            table.nyondo-table
+                thead
+                    tr
+                        th Item Name
+                        th Category
+                        th Quantity
+                        th Cost (UGX)
+                        th Retail (UGX)
+                        th Status
+                tbody
+                    each item in inventory
+                        tr
+                            td #{item.name}
+                            td #{item.category}
+                            td(style="font-weight: bold;") #{item.quantity}
+                            td #{item.cost.toLocaleString()}
+                            td #{item.retail.toLocaleString()}
+                            td
+                                if item.quantity > 10
+                                    span(style="color: var(--success-green);") In Stock
+                                else if item.quantity > 0
+                                    span(style="color: orange;") Low Stock
+                                else
+                                    span(style="color: var(--error-red);") Out of Stock

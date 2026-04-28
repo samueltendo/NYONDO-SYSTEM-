@@ -1,0 +1,66 @@
+extends layout
+
+block content
+  .container.mt-4
+    .row.mb-4
+      .col-md-8
+        h2.fw-bold  Staff Management
+        p.text-muted View and manage authorized system users for Nyondo General Hardware.
+      .col-md-4.text-end
+        a.btn.btn-dark.shadow-sm(href="/users/register") 
+          i.bi.bi-person-plus 
+          |  Add New Staff
+
+    //- Staff Table
+    .card.shadow-sm.border-0
+      .card-body.p-0
+        .table-responsive
+          table.table.table-hover.align-middle.mb-0
+            thead.bg-light
+              tr
+                th.ps-4 Full Name
+                th Role
+                th Contact info
+                th NIN (National ID)
+                th.text-center Actions
+            tbody
+              if users.length > 0
+                each user in users
+                  tr
+                    td.ps-4
+                      .fw-bold= user.fullname
+                      small.text-muted= user.email
+                    td
+                      if user.role === 'Accounts/Admin'
+                        span.badge.bg-dark= user.role
+                      else if user.role === 'Sales Attendant'
+                        span.badge.bg-info.text-white= user.role
+                      else if user.role === 'Store Manager'
+                        span.badge.bg-primary= user.role
+                      else
+                        span.badge.bg-info.text-dark= user.role
+                    td= user.phone
+                    td
+                      code.text-dark= user.nin
+                    td.text-center
+                      button.btn.btn-sm.btn-outline-secondary Edit
+              else
+                tr
+                  td.text-center.py-5(colspan="5") No staff members registered yet.
+
+    //- Role Quick Reference 
+    .row.mt-5
+      .col-md-12
+        h5.text-muted.mb-3 User Access Levels
+      .col-md-4
+        .p-3.border.rounded.bg-white
+          strong  Sales Attendant
+          p.small.mb-0 Records sales, issues receipts, and checks stock availability.
+      .col-md-4
+        .p-3.border.rounded.bg-white
+          strong  Store Manager
+          p.small.mb-0 Registers stock, sets prices, and tracks inventory levels.
+      .col-md-4
+        .p-3.border.rounded.bg-white
+          strong  Accounts/Admin
+          p.small.mb-0 Manages supplier credit, deposits, and system users.

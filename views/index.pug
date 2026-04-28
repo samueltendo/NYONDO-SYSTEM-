@@ -1,0 +1,30 @@
+npmeextends layout
+
+block content
+  .container-fluid.py-4
+    //- Header Section
+    .d-flex.justify-content-between.align-items-center.mb-5
+      h2.text-white NyondoStock #[span.text-info Dashboard]
+      p.text-white-50 Welcome back, #{user}
+
+  
+    .row.g-4
+      each module in modules
+        .col-md-3
+          .glass-card.h-100.text-center.transition-hover
+            .display-4.mb-3= module.icon
+            h5.text-cyan= module.name
+            p.small.text-white-50= module.desc
+            a.btn.btn-cyan.btn-sm.mt-3(href=module.link) Open Module
+
+    
+    .row.mt-5
+      .col-12
+        .glass-card.p-0.overflow-hidden
+          img.img-fluid.w-100(src="/images/background.jpeg" style="height: 300px; object-fit: cover; opacity: 0.7;")
+          .p-4
+            h4.text-white Professional Stock Management
+            p.text-white-50 Digitize your NYONDO General Hardware operations.
+
+    footer.text-center.mt-5.py-4
+      p.text-white-50 © 2026 NyondoStock. Empowering Hardware Businesses.

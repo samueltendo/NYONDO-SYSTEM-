@@ -1,0 +1,22 @@
+doctype html
+html
+  head
+    title NyondoStock
+    link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+    link(rel="stylesheet" href="/css/style.css")
+  body
+    .container-fluid
+      .row
+        // Sidebar (Based on Image 3 & 4)
+        nav.col-md-2.d-none.d-md-block.sidebar.glass-card.m-2(style="min-height: 95vh")
+          .sidebar-sticky.p-3
+            h4.text-cyan.mb-4 NyondoStock
+            ul.nav.flex-column.gap-2
+              li.nav-item: a.nav-link.text-white(href="/")  Dashboard
+              li.nav-item: a.nav-link.text-white(href="/sales")  Sales Management
+              li.nav-item: a.nav-link.text-white(href="/stock")  Stock & Inventory
+              li.nav-item: a.nav-link.text-white(href="/users/register")  Team Members
+        
+        // Main Content Area
+        main.col-md-9.ms-sm-auto.col-lg-10.px-md-4.py-4
+          block content

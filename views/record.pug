@@ -1,0 +1,38 @@
+extends layout
+
+block content
+  .container(style="max-width: 700px; margin: 40px auto;")
+    .glass-card
+      h2.text-cyan Record Sales Transaction
+      p.text-muted(style="margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;") 
+        | Input sale details below to update inventory.
+
+      if error
+        .error-msg(style="background: rgba(255, 62, 62, 0.1); padding: 15px; border: 1px solid var(--error-red); border-radius: 8px; margin-bottom: 20px;")
+          | #{error}
+
+      form(action="/sales/record" method="post")
+        .form-group
+          label(style="display:block; margin-bottom: 5px;") Select Hardware Item
+          select.form-control(name="productId" required)
+            option(value="" disabled selected) -- Select Item from Inventory --
+            each item in inventory
+              option(value=item._id) #{item.itemName} (Stock: #{item.quantity} | UGX #{item.retailPrice})
+
+        .module-grid(style="grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;")
+          .form-group
+            label Quantity Sold
+            input.form-control(type="number" name="quantitySold" min="1" placeholder="0" required)
+          
+          .form-group
+            label Unit Price (UGX)
+            input.form-control.blue-input(type="number" name="unitPrice" placeholder="Selling price" required)
+
+        .form-group(style="margin-top: 15px;")
+          label Transport Fee (UGX)
+          input.form-control.blue-input(type="number" name="transportFee" value="0")
+          small(style="color: var(--cyan-glow); opacity: 0.7;") * Manual Entry or automated calculation (UGX 3,000/KM).
+
+        div(style="margin-top: 30px;")
+          button.btn-cyan(type="submit" style="width: 100%; font-size: 1.1rem; letter-spacing: 1px;") 
+            | COMPLETE TRANSACTION & LOG SALE

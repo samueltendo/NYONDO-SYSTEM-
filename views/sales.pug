@@ -1,0 +1,60 @@
+extends layout
+
+block content
+    .container
+        h1.text-cyan Sales Dashboard
+        
+        .module-grid(style="grid-template-columns: 1fr 2fr;")
+            //- Sidebar: Record Sale Form
+            .glass-card
+                h2.text-cyan New Sale
+                if error
+                    p.error-msg #{error}
+                
+                form(action="/sales/record" method="post")
+                     .form-group
+                     label Date of Sale
+                     input.form-control(type="date" name="saleDate" required value=(new Date()).toISOString().split('T')[0])
+                  .form-group
+                    label Customer Name
+                    input.form-control(type="text" name="customerName" placeholder="Enter customer name" required)  
+                  .form-group
+                    label Customer Contact
+                    input.form-control(type="text" name="customerContact" placeholder="Enter contact details" required) 
+                   .form-group
+                        label Select Item
+                        select.form-control(name="productId" required)
+                            each item in inventory
+                                option(value=item.id) #{item.name} (Stock: #{item.quantity})
+                    .form-group
+                        label Quantity to Sell
+                        input.form-control(type="number" name="quantitySold" min="1" required)
+                    .form-group
+                    label Unit Price (UGX)
+                    input.form-control(type="number" name="unitPrice" min="0" step="0.01" required)
+                    .form-group
+                        label Delivery Distance (KM)
+                        input.form-control.blue-input(type="number" name="distanceKm" step="0.1" placeholder="0 for pickup")
+                        small(style="color: #888;") * Automated: 3,000 UGX/KM
+                    
+                    button.btn-cyan(type="submit" style="width: 100%; margin-top: 15px;") Process Transaction
+
+            //- Main Section: Sales History
+            .glass-card
+                h2.text-cyan Today's Sales Log
+                table.nyondo-table
+                    thead
+                        tr
+                            th Date
+                            th Item
+                            th Qty
+                            th Transport
+                            th Total (UGX)
+                    tbody
+                        each sale in sales
+                            tr
+                                td #{sale.date}
+                                td #{sale.itemName}
+                                td #{sale.qty}
+                                td #{sale.transport.toLocaleString()}
+                                td.text-cyan(style="font-weight: bold;") #{sale.total.toLocaleString()}

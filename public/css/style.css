@@ -1,0 +1,152 @@
+:root {
+    --bg-color: #010816;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --cyan-glow: #00f2ff;
+    --border-color: rgba(0, 242, 255, 0.2);
+    --error-red: #ff3e3e;
+    --success-green: #00ff88;
+}
+
+body {
+    background: radial-gradient(circle at top, #0b1a33, #010816);
+    background-attachment: fixed; /* Ensures background doesn't scroll with content */
+    color: #e0e0e0;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* Glassmorphism Containers */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+    transition: 0.3s;
+}
+
+/* Sidebar Specific (Image 3/4 Style) */
+.sidebar {
+    background: rgba(1, 8, 22, 0.8) !important;
+    border-right: 1px solid var(--border-color);
+}
+
+.nav-link {
+    padding: 12px 20px !important;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    transition: 0.3s;
+}
+
+.nav-link:hover, .active-link {
+    background: rgba(0, 242, 255, 0.1) !important;
+    color: var(--cyan-glow) !important;
+    border-left: 4px solid var(--cyan-glow);
+}
+
+/* Typography */
+.text-cyan { color: var(--cyan-glow); text-shadow: 0 0 10px rgba(0, 242, 255, 0.3); }
+h1, h2, h3 { text-transform: uppercase; letter-spacing: 2px; }
+
+/* Dashboard & Module Grid */
+.module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.module-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+}
+
+.module-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--cyan-glow);
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+}
+
+/* Forms & Inputs */
+.form-control, select {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid var(--border-color) !important;
+    color: white !important;
+    padding: 12px !important;
+    border-radius: 8px !important;
+}
+
+.form-control:focus {
+    border-color: var(--cyan-glow) !important;
+    box-shadow: 0 0 8px rgba(0, 242, 255, 0.4) !important;
+    outline: none;
+}
+
+.blue-input {
+    background: rgba(0, 123, 255, 0.05) !important;
+    border-color: #005a8c !important;
+}
+
+/* Buttons */
+.btn-cyan {
+    background: var(--cyan-glow) !important;
+    color: #010816 !important;
+    font-weight: bold;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    transition: 0.3s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-cyan:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(0, 242, 255, 0.6);
+    cursor: pointer;
+}
+
+/* Tables (Stock/Sales Lists) */
+.nyondo-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.nyondo-table th {
+    background: rgba(0, 242, 255, 0.05);
+    color: var(--cyan-glow);
+    padding: 15px;
+    border-bottom: 2px solid var(--border-color);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.nyondo-table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nyondo-table tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Alerts & Notifications */
+.error-msg { color: var(--error-red); font-size: 0.9rem; padding: 10px; border-radius: 5px; background: rgba(255, 62, 62, 0.1); border: 1px solid var(--error-red); }
+.success-msg { color: var(--success-green); background: rgba(0, 255, 136, 0.1); padding: 10px; border-radius: 5px; }
+
+.notification-item {
+    padding: 15px;
+    border-left: 4px solid var(--cyan-glow);
+    background: rgba(255, 255, 255, 0.03);
+    margin-bottom: 10px;
+    border-radius: 0 8px 8px 0;
+}

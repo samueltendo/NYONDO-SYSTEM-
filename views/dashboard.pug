@@ -1,0 +1,68 @@
+extends layout
+
+block content
+  .container-fluid.mt-2
+    //- Top Header Section
+    .row.mb-4
+      .col-md-12.d-flex.justify-content-between.align-items-end
+        div
+          h1.text-cyan.fw-bold.mb-0= title
+          p.text-white-50.mb-0 Welcome back, #[span.text-white.fw-bold #{user}] (#[span.text-cyan #{userRole.toUpperCase()}])
+        .text-end
+          span.badge(style="background: var(--glass-bg); border: 1px solid var(--border-color); color: var(--cyan-glow); padding: 10px;") 
+            | Last Sync: #{new Date().toLocaleTimeString()}
+
+    .row.g-4
+      //- LEFT COLUMN: Stats & Modules (8 Columns)
+      .col-md-8
+        //- 1. Stats Row
+        .row.g-3.mb-4
+          .col-md-4
+            .glass-card.text-center
+              h6.text-white-50.small.text-uppercase Stock Items
+              h3.fw-bold.text-white= stats.stock
+          .col-md-4
+            .glass-card.text-center
+              h6.text-white-50.small.text-uppercase Today's Sales
+              h3.fw-bold.text-cyan UGX #{stats.sales}
+          .col-md-4
+            .glass-card.text-center
+              h6.text-white-50.small.text-uppercase Supplier Debt
+              h3.fw-bold(style="color: var(--error-red)") UGX #{stats.debt}
+
+        //- 2. Modules Grid
+        .row.g-3
+          each mod in modules
+            .col-md-6
+              .glass-card.h-100.module-card.position-relative
+                .d-flex.align-items-start
+                  .display-6.me-3= mod.icon
+                  div
+                    h5.text-cyan.fw-bold.mb-1= mod.name
+                    p.small.text-white-50= mod.desc
+                    a.btn-cyan.btn-sm.mt-2.stretched-link(href=mod.link style="font-size: 0.7rem;") OPEN MODULE 
+
+      //- RIGHT COLUMN: Notifications Sidebar (4 Columns)
+      .col-md-4
+        .glass-card.h-100.p-0.overflow-hidden
+          .p-3.border-bottom(style="border-color: var(--border-color) !important;")
+            .d-flex.justify-content-between.align-items-center
+              h6.mb-0.fw-bold.text-white Recent Activity
+              if notifications.length > 0
+                span.badge.bg-danger.rounded-pill= notifications.length
+          
+          .card-body.p-0(style="max-height: 550px; overflow-y: auto;")
+            if notifications.length > 0
+              each alert in notifications
+                .p-3.border-bottom.notification-item(style="border-color: var(--border-color) !important;")
+                  .d-flex.justify-content-between.mb-1
+                    small.fw-bold.text-cyan= alert.staffRole || 'System'
+                    small.text-white-50(style="font-size: 0.7rem;")= alert.time
+                  p.mb-0.small.text-white= alert.message
+                  if alert.customer
+                    small.text-white-50 Customer: #{alert.customer}
+            else
+              .p-5.text-center
+                .display-1.text-white-50.mb-3 
+                p.text-white.mb-0 No new notifications
+                p.text-white-50.small.mt-2 System is running smoothly.
