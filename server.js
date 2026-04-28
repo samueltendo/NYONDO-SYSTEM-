@@ -6,14 +6,11 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const app = express();
 const port = process.env.PORT || 3000;
+const connectDB = require('./config/db')
 
-// 1. DATABASE CONNECTION (MongoDB)
-// Connects to the local NyondoStock database
-mongoose.connect('mongodb://localhost:27017/nyondoStock', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => console.log('Connected to MongoDB: Nyondo System'))
-  .catch(err => console.error(' MongoDB Connection Error:', err));
+// . DATABASE CONNECTION (MongoDB)
+connectDB();
+
 
 // 2. SET UP VIEW ENGINE (PUG)
 app.set('view engine', 'pug');
@@ -46,34 +43,32 @@ app.use((req, res, next) => {
 
 // 6. IMPORT ROUTERS
 const indexRoutes = require('./routes/indexRoutes');
-const loginRouter = require('./routes/loginRoutes'); 
-const registerRouter = require('./routes/registerRoutes');
-const dashboardRouter = require('./routes/dashboardRoutes');
-const stockRouter = require('./routes/stockRoutes');
-const salesRouter = require('./routes/salesRoutes');
-const reportsRouter = require('./routes/reportsRoutes');
-const creditRouter = require('./routes/suppliercreditRoutes'); 
-const depositsRouter = require('./routes/depostischemeRoutes');
+const authRoutes = require('./routes/authRoutes')
+const dashboardRoutes = require('./routes/dashboardRoutes');
+const stockRoutes = require('./routes/stockRoutes');
+const salesRoutes = require('./routes/salesRoutes');
+const reportsRoutes = require('./routes/reportsRoutes');
+const creditRoutes = require('./routes/suppliercreditRoutes'); 
+const depositsRoutes = require('./routes/depostischemeRoutes');
 const layoutRoutes = require('./routes/layoutRoutes');
 
 
 // 7. MOUNT ROUTES
 // Public System Entry Points
 app.use('/', indexRoutes);            // Welcome Landing Page
-app.use('/auth', loginRouters);        // Login & Logout Logic
+app.use('/', authRoutes);        // Login & Logout Logic
 
 // app.use('/', layoutRoutes);// This must be placed BEFORE other functional routes to ensure layout.pug has access to the 'user' variable on all pages
 
-// Core Business Modules
-app.use('/register', registerRoutes); // Admin: Staff Registration
-app.use('/dashboard', dashboardRoutes); // Manager/Admin: Overview
-app.use('/stock', stockRoutes);       // Manager/Admin: Inventory Control
-app.use('/sales', salesRoutes);       // Attendant/Manager: Transaction Desk
+// TODO:Core Business Modules
+// app.use('/dashboard', dashboardRoutes); // Manager/Admin: Overview
+// app.use('/stock', stockRoutes);       // Manager/Admin: Inventory Control
+// app.use('/sales', salesRoutes);       // Attendant/Manager: Transaction Desk
 
-// Financial & Secondary Modules
-app.use('/reports', reportsRoutes);   // Manager/Admin: Analytics
-app.use('/credit', creditRoutes);     // Debt & Credit Tracking
-app.use('/deposits', depositsRoutes); // Savings/Deposit Schemes
+// TODO:Financial & Secondary Modules
+// app.use('/reports', reportsRoutes);   // Manager/Admin: Analytics
+// app.use('/credit', creditRoutes);     // Debt & Credit Tracking
+// app.use('/deposits', depositsRoutes); // Savings/Deposit Schemes
 
 // 8. HELPER ROUTES 
 // app.get('/transport', (req, res) => {
