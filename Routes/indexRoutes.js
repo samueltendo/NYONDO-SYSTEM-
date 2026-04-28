@@ -50,4 +50,13 @@ router.get('/about', (req, res) => {
     });
 });
 
+
+
+// GET: View Staff List
+// router.get('/', async (req, res) => {
+//     const staff = await User.find().sort({ fullname: 1 });
+//     res.render('users', { title: 'Staff Directory', staff });
+// });
+
+
 module.exports = router;
