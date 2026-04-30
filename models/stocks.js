@@ -22,4 +22,5 @@ productSchema.pre('save', function(next) {
     next();
 });
 
-module.exports = mongoose.model('Product', productSchema);
+// UPDATED EXPORT: Prevents "Cannot overwrite model once compiled" error
+module.exports = mongoose.models.Product || mongoose.model('Product', productSchema);

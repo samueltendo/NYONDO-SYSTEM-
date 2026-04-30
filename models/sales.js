@@ -6,11 +6,11 @@ const saleSchema = new mongoose.Schema({
     ref: "Product",
     required: true,
   },
-  itemName: String, // Snapshot of item name for reports
+  itemName: String, 
   quantitySold: { type: Number, required: true },
   unitPrice: { type: Number, required: true },
   distanceKm: { type: Number, default: 0 },
-  transportFee: { type: Number, default: 0 }, // Distance * 3000
+  transportFee: { type: Number, default: 0 }, 
   totalAmount: { type: Number, required: true },
   salesAttendant: {
     type: mongoose.Schema.Types.ObjectId,
@@ -20,4 +20,5 @@ const saleSchema = new mongoose.Schema({
   saleDate: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Sale", saleSchema);
+// To check if the sales are repaeted more than once in any file
+module.exports =  mongoose.model('Sale', saleSchema);
