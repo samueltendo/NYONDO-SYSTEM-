@@ -24,7 +24,7 @@ router.post('/register', async (req, res) => {
         // 2. Save to MongoDB
         const newUser = new User({ fullname, phone, nin, role, email, password });
         console.log(newUser)
-        await newUser.save();
+        await newUser.save().then(result=>console.log(result)).catch(err=>console.log(err));
 
         res.redirect('/');
     } catch (err) {
