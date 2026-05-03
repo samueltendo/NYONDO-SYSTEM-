@@ -75,27 +75,7 @@ app.use((req, res, next) => {
 
 // 7. IMPORT ROUTERS
 const indexRoutes = require('./routes/indexRoutes');
-<<<<<<< HEAD
-const loginRouter = require('./routes/authRoutes'); 
-const registerRouter = require('./routes/registerRoutes');
-const dashboardRouter = require('./routes/dashboardRoutes');
-const stockRouter = require('./routes/stockRoutes');
-const salesRouter = require('./routes/salesRoutes');
-const reportsRouter = require('./routes/reportsRoutes');
-const creditRouter = require('./routes/suppliercreditRoutes'); 
-const depositsRouter = require('./routes/depostischemeRoutes');
 
-// 8. MOUNT ROUTES
-app.use('/', indexRoutes);            
-app.use('/auth', loginRoutes);        
-app.use('/register', registerRoutes); 
-app.use('/dashboard', dashboardRoutes); 
-app.use('/stock', stockRoutes);       
-app.use('/sales', salesRoutes);       
-app.use('/reports', reportsRoutes);   
-app.use('/credit', creditRoutes);     
-app.use('/deposits', depositsRoutes); 
-=======
 const authRoutes = require('./routes/authRoutes')
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const stockRoutes = require('./routes/stockRoutes');
@@ -127,7 +107,7 @@ app.use('/', authRoutes);        // Login & Logout Logic
 // app.get('/transport', (req, res) => {
 //     res.render('layout', { title: 'Transport Logs' });
 // });
->>>>>>> c3721b14a3c45d865b28048217d21b2c8937a7f1
+
 
 // 9. ERROR HANDLING (404 Page)
 app.use((req, res) => {         
