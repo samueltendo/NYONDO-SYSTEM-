@@ -16,15 +16,12 @@ const connectDB = require('./config/db')
 // . DATABASE CONNECTION (MongoDB)
 connectDB();
 
-<<<<<<< HEAD
 // 1. DATABASE CONNECTION
 mongoose.connect('mongodb://localhost:27017/nyondoStock', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => console.log(' Connected to MongoDB: Nyondo System'))
   .catch(err => console.error(' MongoDB Connection Error:', err));
-=======
->>>>>>> c3721b14a3c45d865b28048217d21b2c8937a7f1
 
 // 2. SET UP VIEW ENGINE (PUG)
 app.set('view engine', 'pug');
