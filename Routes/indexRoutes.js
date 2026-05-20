@@ -11,11 +11,11 @@ router.get('/', (req, res) => {
         const role = req.session.user.role;
         
         if (role === 'attendant') {
-            return res.redirect('/sales'); // Sales Attendant workplace
+            return res.redirect('/sales'); // Sales Attendant dashboard
         } else if (role === 'manager') {
-            return res.redirect('/stock'); // Store Manager workplace
+            return res.redirect('/stock'); // Store Manager dashboard
         } else {
-            return res.redirect('/dashboard'); // Admin/Generic workplace
+            return res.redirect('/dashboard'); // Admin/ Accounts dashboard
         }
     }
     
@@ -39,24 +39,24 @@ router.get('/health', (req, res) => {
     });
 });
 
-/**
- * @route   GET /about
- * @desc    System Information Page
- */
-router.get('/about', (req, res) => {
-    res.render('layout', { 
-        title: 'About Nyondo Stock',
-        content: 'Nyondo Stock is a custom digitized inventory solution for NYONDO General Hardware, managing stock, sales, and automated delivery logistics.' 
-    });
-});
+// /**
+//  * @route   GET /welcome
+//  * @desc    System Welcome Page
+//  */
+// router.get('/welcome', (req, res) => {
+//     res.render('layout', { 
+//         title: 'Welcome | Nyondo Stock',
+//         content: 'Nyondo Stock is a custom digitized inventory solution for NYONDO General Hardware, managing stock, sales, and automated delivery logistics.' 
+//     });
+// });
 
 
 
 // GET: View Staff List
-// router.get('/', async (req, res) => {
-//     const staff = await User.find().sort({ fullname: 1 });
-//     res.render('users', { title: 'Staff Directory', staff });
-// });
+router.get('/', async (req, res) => {
+    const staff = await User.find().sort({ fullname: 1 });
+    res.render('users', { title: 'Staff Directory', staff });
+});
 
 
 module.exports = router;

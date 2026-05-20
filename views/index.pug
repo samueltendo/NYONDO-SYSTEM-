@@ -1,30 +1,37 @@
-npmeextends layout
-
-block content
-  .container-fluid.py-4
-    //- Header Section
-    .d-flex.justify-content-between.align-items-center.mb-5
-      h2.text-white NyondoStock #[span.text-info Dashboard]
-      p.text-white-50 Welcome back, #{user}
-
-  
-    .row.g-4
-      each module in modules
-        .col-md-3
-          .glass-card.h-100.text-center.transition-hover
-            .display-4.mb-3= module.icon
-            h5.text-cyan= module.name
-            p.small.text-white-50= module.desc
-            a.btn.btn-cyan.btn-sm.mt-3(href=module.link) Open Module
-
+//- doctype html
+//- html
+//-   head
+//-     title NyondoStock | Welcome
+//-     //- Bootstrap for grid and layout
+//-     link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+//-     //- Your custom CSS
+//-     link(rel="stylesheet" href="/css/style.css")
     
-    .row.mt-5
-      .col-12
-        .glass-card.p-0.overflow-hidden
-          img.img-fluid.w-100(src="/images/background.jpeg" style="height: 300px; object-fit: cover; opacity: 0.7;")
-          .p-4
-            h4.text-white Professional Stock Management
-            p.text-white-50 Digitize your NYONDO General Hardware operations.
+//-   body
+//-     .container.d-flex.justify-content-center.align-items-center.vh-100
+//-       //- Using your .glass-card class
+//-       .glass-card.text-center.w-100(style="max-width: 850px;")
+        
+//-         //- Using your .text-cyan class
+//-         h1.display-3.text-cyan.fw-bold.mb-2 NYONDOSTOCK
+//-         p.lead.text-white-50.mb-5 Digital Management Terminal for Nyondo General Hardware LTD.
 
-    footer.text-center.mt-5.py-4
-      p.text-white-50 © 2026 NyondoStock. Empowering Hardware Businesses.
+//-         .row.g-4.mb-5.text-start
+//-           .col-md-6
+//-             //- Using your .notification-item class for the feature look
+//-             .notification-item.h-100
+//-               h6.text-cyan.mb-1  STOCK & CREDIT
+//-               p.small.mb-0 Track hardware inventory and monitor supplier credit schemes accurately.
+//-           .col-md-6
+//-             .notification-item.h-100
+//-               h6.text-cyan.mb-1  TRANSPORT & SALES
+//-               p.small.mb-0 Automated delivery cost calculations and instant digital receipt generation.
+
+//-         //- Using your .btn-cyan class
+//-         .mt-2
+//-           a.btn-cyan(href="/dashboard") ENTER SYSTEM TERMINAL
+        
+//-         //- Footer with your --border-color variable
+//-         .mt-5.pt-4(style="border-top: 1px solid var(--border-color)")
+//-           p.text-white-50.small.mb-0 &copy; 2026 Nyondo General Hardware LTD.
+          

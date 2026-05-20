@@ -1,4 +1,4 @@
-doctype html
+
 html(lang="en")
   head
     meta(charset="UTF-8")
@@ -7,62 +7,56 @@ html(lang="en")
     link(rel="stylesheet" href="/css/style.css")
     link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet")
     
-    style.
-      .navbar { background: rgba(1, 8, 22, 0.95) !important; backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); }
-      .navbar-brand { font-weight: bold; color: var(--cyan-glow) !important; text-shadow: 0 0 10px rgba(0, 242, 255, 0.3); }
-      .nav-link { color: rgba(255, 255, 255, 0.8) !important; transition: 0.3s; font-size: 0.95rem; }
-      .nav-link:hover { color: var(--cyan-glow) !important; }
-      .active-link { border-bottom: 2px solid var(--cyan-glow); color: var(--cyan-glow) !important; }
-      footer { border-top: 1px solid var(--border-color); padding: 30px 0; margin-top: 50px; background: rgba(0,0,0,0.4); }
-
   body
-    //- Navigation Bar
-    nav.navbar.navbar-expand-lg.navbar-dark.sticky-top.shadow-sm
+    nav.navbar.navbar-expand-lg.navbar-dark.sticky-top.shadow-sm(style="background: #010816;")
       .container
-        a.navbar-brand(href="/") 🛠️ NYONDO HARDWARE
+        a.navbar-brand.fw-bold(href="/" style="color: #00f2ff;") 🛠️ NYONDO HARDWARE
         
         button.navbar-toggler(type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav")
           span.navbar-toggler-icon
         
         #navbarNav.collapse.navbar-collapse
           ul.navbar-nav.ms-auto.align-items-center
-            if user
-              //- Shared: Dashboard access for Admin and Manager
-              if user.role === 'admin' || user.role === 'manager'
-                li.nav-item: a.nav-link(href="/dashboard") Dashboard
-              
-              //- Shared: Sales Desk access for all roles
-              li.nav-item: a.nav-link(href="/sales") Sales Desk
-              
-              //- Manager & Admin: Stock Control
-              if user.role === 'manager' || user.role === 'admin'
-                li.nav-item: a.nav-link(href="/stock") Stock Control
-              
-              //- Manager & Admin: Reports and Credit
-              if user.role === 'manager' || user.role === 'admin'
-                li.nav-item: a.nav-link(href="/reports") Reports
-                li.nav-item: a.nav-link(href="/credit") Credit
-              
-              //- Admin Only: Staff Registration
-              if user.role === 'admin'
-                li.nav-item: a.nav-link(href="/register/register") 👥 Staff Management
+            if user && user.role
+              //- 1. STORE MANAGER: Register stock, set prices, track levels
+              //- if user.role.toLowerCase() === 'manager'
+              if user.role === 'Store Manager' || user.role === 'manager'
+                li.nav-item: a.nav-link(href="/manager_dashboard") Dashboard
+                li.nav-item: a.nav-link(href="/products") Register Stock
+                li.nav-item: a.nav-link(href=`/products`) Set Prices
+                li.nav-item: a.nav-link(href="/products/restock") Restock 
+                li.nav-item: a.nav-link(href="/manager_dashboard/TrackStock") Track Stock Levels
 
-              //- Logged In: Logout Button
-              li.nav-item: a.btn-cyan.btn-sm.ms-lg-3.text-dark(href="/auth/logout") Logout
+              //- 2. SALES ATTENDANT: Record sales, issue receipts, check stock
+              if user.role === 'Sales Attendant' || user.role === 'attendant'
+                li.nav-item: a.nav-link(href="/sales_dashboard") Dashboard
+                li.nav-item: a.nav-link(href="/sales") Record Sales
+                li.nav-item: a.nav-link(href="/sales/stock-log") Check Stock
+
+              //- 3. ADMIN / ACCOUNTS: Supplier credit, deposits, reports
+              if user.role === 'Admin' || user.role === 'admin'
+                li.nav-item: a.nav-link(href="/dashboard") Dashboard
+                li.nav-item: a.nav-link(href="/credit") Supplier Credit
+                li.nav-item: a.nav-link(href="/deposits") Manage Deposits
+                li.nav-item: a.nav-link(href="/reports") Financial Reports
+                li.nav-item: a.nav-link(href="/auth/register") Manage Staff
+
+              li.nav-item.ms-lg-3
+                a.btn.btn-sm.px-3(href="/auth/logout" style="background: #00f2ff; color: #000; font-weight: bold; text-decoration: none; border-radius: 4px;") Logout
             else
-              //- Logged Out: Login Link
               li.nav-item: a.nav-link(href="/auth/login") Staff Login
 
-    //- Main Content Area
     main.container.my-5
       block content
 
-    //- Footer
-    footer.text-center
+    footer.text-center.mt-5.py-4(style="border-top: 1px solid rgba(255,255,255,0.1);")
       .container
-        p.text-white-50.mb-1 © 2024 NYONDO General Hardware LTD.
-        p.mb-1 Digitized Stock & Sales Management System v1.0.4
-        small.text-muted(style="font-size: 0.75rem;") Secure Access Active: #{user ? user.role.toUpperCase() : 'GUEST'}
+        p.text-white-50.mb-1 © 2026 NYONDO General Hardware LTD.
+        p.mb-1 Digitized Management System
+        //- small.text-muted(style="font-size: 0.75rem;") 
+        //-   | Session User: #{ (user && user.fullname) ? user.fullname } | 
+        //-   | Role: #{ (user && user.role) ? user.role.toUpperCase() }
 
-    //- Scripts
     script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js")
+     
+     

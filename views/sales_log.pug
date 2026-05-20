@@ -1,0 +1,34 @@
+extends layout
+
+block content
+  .container.py-5
+    h2.text-cyan.mb-4 Detailed Sales History: #{user.fullname}
+
+    if dailySummary && dailySummary.length > 0
+      each day in dailySummary
+        .glass-card.mb-4.overflow-hidden
+          //- Day Header
+          .bg-dark.p-3.d-flex.justify-content-between.align-items-center
+            span.fw-bold.text-info #{new Date(day._id).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+            span.badge.bg-success UGX #{day.totalSalesAmount.toLocaleString()}
+          
+          //- Items Table for this specific day
+          .table-responsive
+            table.table.table-dark.table-sm.mb-0
+              thead
+                tr.extra-small.text-white-50
+                  th.ps-4 ITEM NAME
+                  th.text-center QTY
+                  th.text-end.pe-4 AMOUNT
+              tbody
+                each item in day.items
+                  tr
+                    td.ps-4 #{item.name}
+                    td.text-center #{item.qty}
+                    td.text-end.pe-4 #{item.amount.toLocaleString()}
+    else
+      .glass-card.p-5.text-center
+        p.text-muted No sales records found for your account.
+
+ 
+    

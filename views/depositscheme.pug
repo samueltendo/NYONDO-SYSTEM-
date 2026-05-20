@@ -21,9 +21,9 @@ block content
             .mb-3
               label.text-white-50.small Acting Staff Role
               select.form-control(name="staffRole" required)
-                option(value="Sales Attendant") Sales Attendant
-                option(value="Store Manager") Store Manager
-                option(value="Accounts/Admin") Accounts/Admin
+                option(value="attendant") Sales Attendant
+                option(value="manager") Store Manager
+                option(value="admin") Accounts/Admin
             
             hr(style="border-color: var(--border-color)")
             
@@ -51,7 +51,8 @@ block content
               thead
                 tr
                   th Customer
-                  th Contact/NIN
+                  th NIN 
+                  th Contact 
                   th.text-end Balance (UGX)
                   th.text-center Date
               tbody
@@ -59,9 +60,9 @@ block content
                   each acc in accounts
                     tr
                       td: .fw-bold.text-white= acc.customerName
+                      td: small.text-cyan(style="font-size: 0.7rem;") #{acc.nin}
                       td
                         small.d-block.text-white-50= acc.phone
-                        small.text-cyan(style="font-size: 0.7rem;") NIN: #{acc.nin}
                       td.text-end.fw-bold(style="color: var(--success-green)")= acc.amount.toLocaleString()
                       td.text-center.small.text-white-50= acc.date.toLocaleDateString()
                 else

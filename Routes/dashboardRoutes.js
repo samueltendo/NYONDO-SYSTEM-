@@ -1,42 +1,57 @@
 const express = require('express');
 const router = express.Router();
+const Product = require('../models/Product');
+const Sale = require('../models/sales');
+const Deposit = require('../models/deposit');
+const Credit = require('../models/Credit'); 
+const { ensureAuthenticated, ensureRole } = require('../middleware/auth');
 
-router.get('/', (req, res) => {
-    // 1. Session Security
-    if (!req.session.user) return res.redirect('/auth/login');
-    const user = req.session.user;
+router.get('/', ensureAuthenticated, ensureRole('admin'), async (req, res) => {
+    try {
+        const stockCount = await Product.countDocuments();
+        
+        const allSales = await Sale.find();
+        const totalSales = allSales.reduce((acc, s) => acc + s.totalAmount, 0);
 
-    // 2. Notifications from global store
-    const alerts = global.notifications || [];
+        const allDeposits = await Deposit.find();
+        const totalDeposits = allDeposits.reduce((acc, d) => acc + d.amount, 0);
 
-    // 3. System Stats (Placeholders aligned with Hardware Scope)
-    const stats = {
-        stock: 145,
-        sales: "1,250,000",
-        debt: "8,700,000"
-    };
+        const allCredit = await Credit.find();
+        const totalDebt = allCredit.reduce((acc, c) => acc + (c.amountOwed || 0), 0);
 
-    // 4. Module List with Role Logic
-    const allModules = [
-        { name: 'Stock Management', desc: 'Real-time inventory tracking', link: '/stock', roles: ['admin', 'manager'] },
-        { name: 'Sales Tracking', desc: 'History and automated receipts', link: '/sales', roles: ['admin', 'manager', 'attendant'] },
-        { name: 'Deposit Scheme', desc: 'Customer savings and deposits', link: '/deposits', roles: ['admin', 'manager', 'attendant'] },
-        { name: 'Credit Management', desc: 'Supplier debt tracking', link: '/credit', roles: ['admin', 'manager'] },
-        { name: 'Financial Reports', desc: 'Profit & Loss analytics', link: '/reports', roles: ['admin', 'manager'] },
-        { name: 'Staff Management', desc: 'User roles and registration', link: '/register/register', roles: ['admin'] }
-    ];
+        const recentSales = await Sale.find().sort({ saleDate: -1 }).limit(5);
+        const lowStock = await Product.find({ quantity: { $lt: 10 } }).limit(5);
+        
+        const notifications = [
+            ...recentSales.map(s => ({ staffRole: 'Sales', message: `Sold ${s.itemName}`, time: 'Recent', customer: s.customerName })),
+            ...allDeposits.slice(-2).map(d => ({ staffRole: 'Accounts', message: `New Deposit Received`, time: 'Today', customer: d.customerName }))
+        ];
 
-    // Filter modules based on logged-in user role
-    const filteredModules = allModules.filter(mod => mod.roles.includes(user.role));
+        const modules = [
+            { name: 'Supplier Credit', desc: 'Track hardware debts', link: '/credit'},
+            { name: 'Deposit Scheme', desc: 'Manage customer savings', link: '/deposits' },
+            { name: 'Financial Reports', desc: 'P&L and Audit logs', link: '/reports'},
+            { name: 'Staff Management', desc: 'User roles & access', link: '/register' },
+        ];
 
-    res.render('dashboard', { 
-        title: 'NyondoStock Dashboard',
-        user: user.name,
-        userRole: user.role,
-        stats: stats,
-        modules: filteredModules,
-        notifications: alerts 
-    });
+        res.render('dashboard', {
+            title: 'Admin Command Center',
+            user: req.user.fullname,
+            userRole: req.user.role,
+            stats: {
+                stock: stockCount,
+                sales: totalSales.toLocaleString(),
+                credit: totalDebt.toLocaleString(), 
+                deposits: totalDeposits.toLocaleString()
+            },
+            recentSales,
+            lowStock,
+            modules,
+            notifications
+        });
+    } catch (err) {
+        res.status(500).send("Admin Dashboard Error: " + err.message);
+    }
 });
 
 module.exports = router;

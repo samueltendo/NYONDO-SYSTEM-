@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/Users');
+const { use } = require('passport');
 
 // GET: Display Registration Form
 router.get('/register', (req, res) => {
-    res.render('register', { title: 'Staff Registration' });
+    res.render('register', { title: 'Staff Registration' , userRole: req.user });
 });
 
 // POST: Process Registration

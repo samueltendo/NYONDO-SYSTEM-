@@ -1,68 +1,166 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 const Product = require("../models/stocks");
-const Sale = require("../models/Sales");
+const Sale = require("../models/sales");
+const { ensureAuthenticated, ensureRole } = require("../middleware/auth");
 
-// GET: Display the Record Sale Form
-router.get("/record", async (req, res) => {
-  try {
-    const inventory = await Product.find({ quantity: { $gt: 0 } });
-    res.render("record", { title: "Record Transaction", inventory });
-  } catch (err) {
-    res.status(500).send("Error: " + err.message);
-  }
-});
+/**
+ * @route   GET /sales
+ * @desc    Display Sales Point (Inventory list and recent personal sales log)
+ */
+router.get("/", ensureAuthenticated, ensureRole('attendant'), async (req, res) => {
+    try {
+        const [inventory, sales] = await Promise.all([
+            Product.find({ quantity: { $gt: 0 } }).lean(),
+            Sale.find({ salesAttendant: req.user._id })
+                .sort({ saleDate: -1 })
+                .limit(10)
+                .lean()
+        ]);
 
-// POST: Process the Sale
-router.post("/record", async (req, res) => {
-  try {
-    const { productId, quantitySold, unitPrice, transportFee } = req.body;
-    const qty = parseInt(quantitySold);
-    const transFee = parseFloat(transportFee || 0);
-
-    // 1. Find Product
-    const item = await Product.findById(productId);
-    if (!item || item.quantity < qty) {
-      const inventory = await Product.find();
-      return res.render("record", {
-        title: "Record Transaction",
-        inventory,
-        error: "Insufficient stock or item not found.",
-      });
+        res.render("sales", {
+            title: "Nyondo Sales Point",
+            inventory,
+            sales,
+            user: req.user,
+            error: req.query.error
+        });
+    } catch (err) {
+        res.status(500).send("Error loading sales point: " + err.message);
     }
-
-    // 2. Financials
-    const subtotal = qty * parseFloat(unitPrice);
-    const total = subtotal + transFee;
-
-    // 3. Update Inventory & Save Sale
-    item.quantity -= qty;
-    await item.save();
-
-    await Sale.create({
-      product: item._id,
-      itemName: item.itemName,
-      quantitySold: qty,
-      unitPrice: parseFloat(unitPrice),
-      transportFee: transFee,
-      totalAmount: total,
-      salesAttendant: req.session.user ? req.session.user.id : null,
-      saleDate: new Date(),
-    });
-
-    res.redirect("/sales?status=success");
-  } catch (err) {
-    res.status(500).send("Transaction Error: " + err.message);
-  }
 });
 
-// Get sales from DB
-router.get("/sales-list", async (req, res) => {
-  try {
-    const sales = await Sale.find().populate;
-  } catch (error) {}
 
-  res.render("sales");
+router.post("/product", ensureAuthenticated, ensureRole('attendant'), async (req, res) => {
+    try {
+        const { productId, quantitySold, distanceKm, customerName, customerContact } = req.body;
+        const qty = parseInt(quantitySold);
+
+        // 1. Atomic Update: Check stock and decrement in one operation
+        // This prevents overselling even without transactions
+        const updatedProduct = await Product.findOneAndUpdate(
+            { _id: productId, quantity: { $gte: qty } },
+            { $inc: { quantity: -qty } },
+            { new: true }
+        );
+
+        if (!updatedProduct) {
+            return res.redirect(`/sales?error=${encodeURIComponent("Insufficient stock or product unavailable.")}`);
+        }
+
+        // 2. Automated Financial Calculations
+        const dist = parseFloat(distanceKm || 0);
+        const transportFee = dist * 3000; 
+        const totalAmount = (qty * updatedProduct.retailPrice) + transportFee;
+
+        // 3. Create Sale Record
+        const savedSale = await Sale.create({
+            product: updatedProduct._id,
+            itemName: updatedProduct.itemName,
+            customerName,
+            customerContact,
+            quantitySold: qty,
+            unitPrice: updatedProduct.retailPrice,
+            distanceKm: dist,
+            transportFee,
+            totalAmount,
+            branch: req.user.branch || "Entebbe",
+            salesAttendant: req.user._id,
+            saleDate: new Date()
+        });
+
+        res.redirect(`/sales/receipt/${savedSale._id}`);
+
+    } catch (err) {
+        console.error("Sale Error:", err.message);
+        res.redirect(`/sales?error=${encodeURIComponent("An error occurred during processing.")}`);
+    }
 });
 
+/**
+ * @route   GET /sales/receipt/:id
+ */
+router.get("/receipt/:id", ensureAuthenticated, async (req, res) => {
+    try {
+        const sale = await Sale.findById(req.params.id)
+            .populate('salesAttendant', 'fullname')
+            .lean();
+
+        if (!sale) return res.status(404).send("Receipt not found.");
+
+        const receiptNo = `NYO-${new Date(sale.saleDate).getFullYear()}-${sale._id.toString().slice(-5).toUpperCase()}`;
+
+        res.render("receipt", {
+            title: "Nyondo Hardware Receipt",
+            user: req.user,
+            sale,
+            receiptNo
+        });
+    } catch (err) {
+        res.status(500).send("Error generating receipt.");
+    }
+});
+
+router.get("/log", ensureAuthenticated, ensureRole('attendant'), async (req, res) => {
+    try {
+        const dailySummary = await Sale.aggregate([
+            { $match: { salesAttendant: req.user._id } },
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$saleDate" } },
+                    totalSalesAmount: { $sum: "$totalAmount" },
+                    transactionCount: { $sum: 1 },
+                    // This creates an array of all items sold on this date
+                    items: { 
+                        $push: { 
+                            name: "$itemName", 
+                            qty: "$quantitySold", 
+                            amount: "$totalAmount" 
+                        } 
+                    }
+                }
+            },
+            { $sort: { "_id": -1 } }
+        ]);
+
+        res.render("sales_log", {
+            title: "Detailed Sales Log",
+            dailySummary: dailySummary || [], 
+            user: req.user
+        });
+    } catch (err) {
+        res.status(500).send("Error loading log.");
+    }
+});
+
+router.get("/stock-log", ensureAuthenticated, ensureRole('attendant'), async (req, res) => {
+    try {
+        const products = await Product.find().sort({ itemName: 1 }).lean();
+        
+        // Define the "Recent" window (items updated in the last 72 hours)
+        const recentThreshold = new Date(Date.now() - 72 * 60 * 60 * 1000);
+
+        const stockLog = products.map(item => {
+            const isNew = item.createdAt > recentThreshold;
+            const isPriceChanged = item.lastPriceUpdate > recentThreshold;
+            const isRestocked = item.lastStocked > recentThreshold && !isNew;
+            const isLow = item.quantity <= (item.lowStockLevel || 5);
+
+            return {
+                ...item,
+                status: isLow ? 'LOW' : (item.quantity === 0 ? 'OUT' : 'OK'),
+                flags: { isNew, isPriceChanged, isRestocked, isLow }
+            };
+        });
+
+        res.render("stock_log", {
+            title: "Hardware Stock Log",
+            inventory: stockLog,
+            user: req.user
+        });
+    } catch (err) {
+        console.error("Stock Log Error:", err);
+        res.status(500).send("Internal Server Error: Unable to fetch stock log.");
+    }
+});
 module.exports = router;

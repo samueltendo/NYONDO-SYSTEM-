@@ -1,127 +1,137 @@
-require('dotenv').config();
-const express = require('express');
-const path = require('path');
-const mongoose = require('mongoose');
-const session = require('express-session');
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
+require("dotenv").config();
+const express = require("express");
+const path = require("path");
+const session = require("express-session");
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+const connectDB = require("./config/db");
+const bcrypt = require("bcryptjs");
 
-// Import User Model for Passport
-const User = require('./models/Users'); 
+// Import Models
+const User = require("./models/Users");
 
 const app = express();
 const port = process.env.PORT || 3000;
-const connectDB = require('./config/db')
-
-// . DATABASE CONNECTION (MongoDB)
-connectDB();
 
 // 1. DATABASE CONNECTION
-mongoose.connect('mongodb://localhost:27017/nyondoStock', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => console.log(' Connected to MongoDB: Nyondo System'))
-  .catch(err => console.error(' MongoDB Connection Error:', err));
+// Using your config/db.js logic exclusively
+connectDB();
 
 // 2. SET UP VIEW ENGINE (PUG)
-app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, 'views'));
+app.set("view engine", "pug");
+app.set("views", path.join(__dirname, "views"));
 
 // 3. MIDDLEWARE & STATIC ASSETS
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // 4. SESSION CONFIGURATION (Must come BEFORE Passport)
-app.use(session({
-    name: 'nyondo.sid',
-    secret: process.env.SESSION_SECRET || 'NyondoSystem,',
+app.use(
+  session({
+    name: "nyondo.sid",
+    secret: process.env.SESSION_SECRET || "NyondoSystemSecret",
     resave: false,
     saveUninitialized: false,
-    cookie: { 
-        maxAge: 1000 * 60 * 60 * 24, 
-        secure: false 
-    }
-}));
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24, // 24 Hours
+      secure: false,
+    },
+  }),
+);
 
 // 5. PASSPORT CONFIGURATION
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Passport Strategy
-passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
-    try {
+// Passport Local Strategy
+passport.use(
+  new LocalStrategy(
+    { usernameField: "email" },
+    async (email, password, done) => {
+      try {
         const user = await User.findOne({ email });
-        if (!user) return done(null, false, { message: 'Invalid Email' });
-        // In production, use bcrypt.compare(password, user.password)
-        if (user.password !== password) return done(null, false, { message: 'Invalid Password' });
-        return done(null, user);
-    } catch (err) { return done(err); }
-}));
+        if (!user) return done(null, false, { message: "Invalid Email" });
+
+        // Simple password check (Note: In production use bcrypt.compare)
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (isMatch) {
+          return done(null, user);
+        } else {
+          return done(null, false, { message: "Invalid Password" });
+        }
+      } catch (err) {
+        return done(err);
+      }
+    },
+  ),
+);
 
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
-    try {
-        const user = await User.findById(id);
-        done(null, user);
-    } catch (err) { done(err); }
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err);
+  }
 });
 
 // 6. GLOBAL VIEW VARIABLES
+// Injects 'user' into every PUG file so Navbar/Sidebar can see role-based access
 app.use((req, res, next) => {
-    res.locals.user = req.user || null; // Passport sets req.user
-    next();
+  res.locals.user = req.user || null;
+  next();
 });
 
 // 7. IMPORT ROUTERS
-const indexRoutes = require('./routes/indexRoutes');
+const indexRoutes = require("./routes/indexRoutes");
+const authRoutes = require("./routes/authRoutes");
+const productRoutes = require("./routes/productRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
+const stockRoutes = require("./routes/stockRoutes");
+const salesRoutes = require("./routes/salesRoutes");
+const reportsRoutes = require("./routes/reportsRoutes");
+const creditRoutes = require("./routes/suppliercreditRoutes");
+const depositsRoutes = require("./routes/depostischemeRoutes");
+const slasdashboardRoutes = require("./routes/salesDashboard");
+const managerdashboardRoutes = require("./routes/manager_dashboard");
 
-const authRoutes = require('./routes/authRoutes')
-const dashboardRoutes = require('./routes/dashboardRoutes');
-const stockRoutes = require('./routes/stockRoutes');
-const salesRoutes = require('./routes/salesRoutes');
-const reportsRoutes = require('./routes/reportsRoutes');
-const creditRoutes = require('./routes/suppliercreditRoutes'); 
-const depositsRoutes = require('./routes/depostischemeRoutes');
-const layoutRoutes = require('./routes/layoutRoutes');
+// 8. MOUNT ROUTES
+app.use("/", indexRoutes);
+app.use("/auth", authRoutes); // Use /auth as the base for login/logout
 
+// Core Business Modules
+app.use("/dashboard", dashboardRoutes); // Main Dashboard (Admin )
+app.use("/stock", stockRoutes); // Inventory Control
+app.use("/sales", salesRoutes); // Transaction Desk
+app.use("/register", authRoutes); // Staff Registration (Admin Only)
+app.use("/products", productRoutes); // Product Management
 
-// 7. MOUNT ROUTES
-// Public System Entry Points
-app.use('/', indexRoutes);            // Welcome Landing Page
-app.use('/', authRoutes);        // Login & Logout Logic
-
-// app.use('/', layoutRoutes);// This must be placed BEFORE other functional routes to ensure layout.pug has access to the 'user' variable on all pages
-
-// TODO:Core Business Modules
-// app.use('/dashboard', dashboardRoutes); // Manager/Admin: Overview
-// app.use('/stock', stockRoutes);       // Manager/Admin: Inventory Control
-// app.use('/sales', salesRoutes);       // Attendant/Manager: Transaction Desk
-
-// TODO:Financial & Secondary Modules
-// app.use('/reports', reportsRoutes);   // Manager/Admin: Analytics
-// app.use('/credit', creditRoutes);     // Debt & Credit Tracking
-// app.use('/deposits', depositsRoutes); // Savings/Deposit Schemes
-
-// 8. HELPER ROUTES 
-// app.get('/transport', (req, res) => {
-//     res.render('layout', { title: 'Transport Logs' });
-// });
-
-
-// 9. ERROR HANDLING (404 Page)
-app.use((req, res) => {         
-    res.status(404).render('layout', { 
-        title: '404 - Page Not Found',
-        error: 'The requested Nyondo System module was not found.' 
-    });
+// Financial & Secondary Modules
+app.use("/reports", reportsRoutes); // Analytics
+app.use("/credit", creditRoutes); // Debt Tracking
+app.use("/deposits", depositsRoutes); // Savings Schemes
+app.use("/sales_dashboard", slasdashboardRoutes); // Sales Dashboard
+app.use("/manager_dashboard", managerdashboardRoutes); // Manager Dashboard
+// 9. HELPER ROUTES
+app.get("/transport", (req, res) => {
+  res.render("layout", { title: "Transport Logs" });
 });
 
-// 10. START SERVER
+// 10. ERROR HANDLING (404 Page)
+app.use((req, res) => {
+  res.status(404).render("layout", {
+    title: "404 - Page Not Found",
+    error: "The requested Nyondo System module was not found.",
+  });
+});
+
+// 11. START SERVER
 app.listen(port, () => {
-    console.log(`-----------------------------------------------`);
-    console.log(`  NYONDOSTOCK SYSTEM IS LIVE`);
-    console.log(`  URL: http://localhost:${port}`);
-    console.log(`  Status: Online - ${new Date().toLocaleTimeString()}`);
-    console.log(`-----------------------------------------------`);
+  console.log(`-----------------------------------------------`);
+  console.log(` NYONDOSTOCK SYSTEM IS LIVE`);
+  console.log(` URL: http://localhost:${port}`);
+  console.log(` Status: Online - ${new Date().toLocaleTimeString()}`);
+  console.log(`-----------------------------------------------`);
 });

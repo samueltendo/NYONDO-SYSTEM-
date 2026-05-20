@@ -1,0 +1,202 @@
+extends layout
+
+block content
+  .container-fluid.py-4
+    .row.mb-4.align-items-center
+      .col-md-8
+        h2.text-cyan Stock Management
+        p.text-white-50 Manage Nyondo Hardware Inventory Records
+      .col-md-4.text-end
+        //- Link back to the Manager's main dashboard
+        a.btn.btn-outline-info.btn-sm(href="/manager_dashboard")  Back to Manager Dashboard
+
+    .row
+      //- LEFT: Registration Form
+      .col-lg-4
+        .glass-card.mb-4
+          h5.text-cyan.mb-4 Register New Stock
+          if error
+            .alert.alert-danger.py-2.small #{error}
+          
+          //- UPDATED: i have added enctype for file uploads
+          form(action="/product/" method="POST" enctype="multipart/form-data")
+            .mb-3
+              label.small.text-white-50 Item Name
+              input.form-control.bg-dark.text-white(name="itemName" required placeholder="e.g. Iron Sheets")
+            
+            //- NEW: Product Image Upload Field
+            .mb-3
+              label.small.text-white-50 Product Image
+              input.form-control.bg-dark.text-white(type="file" name="productImage" accept="image/*")
+            
+            .mb-3
+              label.small.text-white-50 Category
+              select.form-select.bg-dark.text-white(name="category" required)
+                option(value="Cement") Cement
+                option(value="Steel") Steel
+                option(value="Plumbing") Plumbing
+                option(value="Electrical") Electrical
+                option(value="Paints") Paints
+                option(value="Roofing") Roofing
+                option(value="Tiles") Tiles
+                option(value="Timber") Timber
+                option(value="Tools") Tools
+                option(value="Nails") Nails & Fasteners
+                option(value="Water Systems") Water Systems
+                option(value="PVC") PVC Products
+                option(value="Construction") Construction Materials
+                option(value="Safety") Safety Equipment
+
+            
+            .mb-3
+              label.small.text-white-50 Unit
+              select.form-select.bg-dark.text-white(name="unit" required min="1" placeholder="e.g. Piece")
+                  option(value="") -- Select Unit --
+                  option(value="Kg") Kilogram
+                  option(value="Bag") Bag
+                  option(value="Piece") Piece
+                  option(value="Litre") Litre
+                  option(value="Pair") Pair
+                  option(value="Roll") Roll
+                  option(value="Box") Box
+                  option(value="Meter") Meter
+                  option(value="Foot") Foot
+                  option(value="Ton") Ton
+                  option(value="Packet") Packet
+                  option(value="Sheet") Sheet
+              
+            
+            .row
+              .col-6.mb-3
+                label.small.text-white-50 Cost (UGX)
+                input.form-control.bg-dark.text-white(type="number" name="costPrice" required)
+              .col-6.mb-3
+                label.small.text-white-50 Selling (UGX)
+                input.form-control.bg-dark.text-white(type="number" name="retailPrice" required)
+            
+            button.btn-cyan.w-100.mt-2(type="submit") Register Stock
+
+      //- RIGHT: Database List
+      .col-lg-8
+        .glass-card
+          h5.text-cyan.mb-4 Hardware Inventory List
+          .table-responsive
+            table.table.table-dark.table-hover
+              thead.text-white-50
+                tr
+                  th Preview
+                  th Item Name
+                  th Qty
+                  th Selling Price
+                  th Actions
+              tbody
+                if products.length > 0
+                  each product in products
+                    tr
+                      //- NEW: Display the uploaded image
+                      td
+                        img(src=`/uploads/${product.productImage || 'no-image.jpg'}` alt="img" style="width: 45px; height: 45px; object-fit: cover; border-radius: 5px; border: 1px solid rgba(255,255,255,0.1);")
+                      
+                      td.fw-bold= product.itemName
+                      //- Logic: Highlight low stock based on your schema's lowStockLevel
+                      td(class=product.quantity <= product.lowStockLevel ? 'text-danger fw-bold' : '')= product.quantity
+                      td= product.retailPrice.toLocaleString()
+                      td
+                        .btn-group
+                          //- UPDATED: Path matches your productRoutes.js
+                          a.btn.btn-sm.btn-outline-info(href=`/products/edit/${product._id}`) Edit
+
+                          
+                          if user.role === 'manager'
+                            form(action=`/products/delete/${product._id}` method="POST" onsubmit="return confirm('Delete permanently?')")
+                            button.btn.btn-sm.btn-outline-danger.ms-1(type="submit") Delete
+                else
+                  tr
+                    td(colspan="5").text-center.py-5 No records found in MongoDB.
+
+
+
+
+
+
+
+
+
+//- extends layout
+
+//- block content
+//-   .row.justify-content-center
+//-     //- Add Product Card
+//-     .col-md-6.mb-5
+//-       .card.shadow-lg.border-0
+//-         .card-header.bg-dark.text-white.text-center.py-3
+//-           h4.mb-0 Inventory Management
+//-           small.text-warning Nyondo General Hardware LTD
+//-         .card-body.p-4
+//-           if error
+//-             .alert.alert-danger.small #{error}
+//-           form(action="/products/stock" method="post")
+//-             //- Item Name
+//-             .mb-3
+//-               label.form-label Item Name
+//-               input.form-control(type="text" name="itemName" placeholder="e.g. Pre-painted Iron Sheets" required)
+//-             .row
+//-               //- Category Selection
+//-               .col-md-6.mb-3
+//-                 label.form-label Category
+//-                 select.form-select(name="category" required)
+//-                   option(value="" disabled selected) -- Select --
+//-                   option(value="Steel") Steel
+//-                   option(value="Cement") Cement
+//-                   option(value="Roofing") Roofing
+//-                   option(value="Other") Other
+//-               //- Quantity
+//-               .col-md-6.mb-3
+//-                 label.form-label Initial Quantity
+//-                 input.form-control(type="number" name="quantity" min="0" placeholder="0" required)
+//-             .row
+//-               //- Cost Price
+//-               .col-md-6.mb-3
+//-                 label.form-label Cost Price (UGX)
+//-                 input.form-control(type="number" name="costPrice" placeholder="Wholesale price" required)
+//-               //- Retail Price
+//-               .col-md-6.mb-4
+//-                 label.form-label Retail Price (UGX)
+//-                 input.form-control(type="number" name="retailPrice" placeholder="Selling price" required)
+//-             .d-grid
+//-               button.btn.btn-primary.btn-lg(type="submit") Add Product to Stock
+
+//-         .card-footer.text-center.py-3
+//-           a.text-muted.small(href="/dashboard") Back to Dashboard
+
+//-     //- Inventory List Card
+//-     .col-md-10
+//-       .card.shadow-lg.border-0
+//-         .card-header.bg-dark.text-white.py-3
+//-           h5.mb-0.text-center Current Stock Records
+//-         .card-body.p-0
+//-           .table-responsive
+//-             table.table.table-hover.mb-0
+//-               thead.table-light
+//-                 tr
+//-                   th Item Name
+//-                   th Category
+//-                   th Qty
+//-                   th Cost (UGX)
+//-                   th Retail (UGX)
+//-                   th.text-center Action
+//-               tbody
+//-                 if products && products.length > 0
+//-                   each product in products
+//-                     tr
+//-                       td.fw-bold #{product.itemName}
+//-                       td: span.badge.bg-info.text-dark #{product.category}
+//-                       td(class=product.quantity < 5 ? "text-danger fw-bold" : "") #{product.quantity}
+//-                       td #{product.costPrice.toLocaleString()}
+//-                       td #{product.retailPrice.toLocaleString()}
+//-                       td.text-center
+//-                         form(action=`/products/delete/${product._id}` method="post" onsubmit="return confirm('Delete this product?')")
+//-                           button.btn.btn-sm.btn-outline-danger(type="submit") Delete
+//-                 else
+//-                   tr
+//-                     td(colspan="6").text-center.py-4 No products found in inventory.

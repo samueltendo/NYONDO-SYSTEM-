@@ -7,10 +7,11 @@ block content
 
     .row.g-4
       //- Form: Record New Credit
+      form(action="/credit/products" method="post")
       .col-lg-4
         .glass-card
           h4.text-cyan New Credit Record
-          form(action="/credit/add" method="POST")
+          form(action="/credit/products" method="post")
             .form-group.mb-3
               label Supplier Name
               input.form-control(type="text" name="supplierName" required)
@@ -32,7 +33,7 @@ block content
           table.nyondo-table
             thead
               tr
-                th Supplier
+                th SupplierName 
                 th Item
                 th Amount (UGX)
                 th Due Date
@@ -49,7 +50,7 @@ block content
                     span(style=`color: ${c.status === 'Paid' ? 'var(--success-green)' : 'orange'}`) #{c.status}
                   td
                     if c.status === 'Pending'
-                      form(action=`/credit/pay/${c._id}` method="POST")
+                      form(action=`/credit/pay/${c._id}` method="post" style="display:inline;")
                         button.btn-cyan(style="padding: 5px 10px; font-size: 0.7rem;") MARK PAID
                     else
                       span.text-muted Completed

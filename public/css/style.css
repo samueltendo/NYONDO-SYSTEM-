@@ -1,152 +1,162 @@
 :root {
-    --bg-color: #010816;
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --cyan-glow: #00f2ff;
-    --border-color: rgba(0, 242, 255, 0.2);
-    --error-red: #ff3e3e;
-    --success-green: #00ff88;
+    --bg-color: #b2b3b4ec;          /* Deep Slate Background */
+    --primary-blue: #1e40af;     /* Industrial Blue */
+    --accent-blue: #3b82f6;      /* Bright Blue for Glow */
+    --success-green: #10b981;    /* Professional Green for Sales/Stock */
+    --neutral-grey: #64748b;     
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --error-red: #ef4444;
 }
 
 body {
-    background: radial-gradient(circle at top, #0b1a33, #010816);
-    background-attachment: fixed; /* Ensures background doesn't scroll with content */
-    color: #e0e0e0;
+    /* Soft Blue/Grey Gradient */
+    background: radial-gradient(circle at top, #1e293b, #0d1117);
+    background-attachment: fixed;
+    color: #f1f5f9;
     font-family: 'Inter', 'Segoe UI', sans-serif;
     min-height: 100vh;
     margin: 0;
 }
 
-/* Glassmorphism Containers */
+/* Glassmorphism with Slate/Grey Tint */
 .glass-card {
     background: var(--glass-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-color);
-    border-radius: 15px;
+    border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     transition: 0.3s;
 }
 
-/* Sidebar Specific (Image 3/4 Style) */
+/* Sidebar & Navigation (Industrial Blue Theme) */
 .sidebar {
-    background: rgba(1, 8, 22, 0.8) !important;
+    background: rgba(15, 23, 42, 0.9) !important;
     border-right: 1px solid var(--border-color);
 }
 
-.nav-link {
-    padding: 12px 20px !important;
-    border-radius: 10px;
-    margin-bottom: 5px;
-    transition: 0.3s;
-}
-
 .nav-link:hover, .active-link {
-    background: rgba(0, 242, 255, 0.1) !important;
-    color: var(--cyan-glow) !important;
-    border-left: 4px solid var(--cyan-glow);
+    background: rgba(59, 130, 246, 0.1) !important;
+    color: var(--accent-blue) !important;
+    border-left: 4px solid var(--primary-blue);
 }
 
-/* Typography */
-.text-cyan { color: var(--cyan-glow); text-shadow: 0 0 10px rgba(0, 242, 255, 0.3); }
-h1, h2, h3 { text-transform: uppercase; letter-spacing: 2px; }
-
-/* Dashboard & Module Grid */
-.module-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+/* Typography (Professional Blue Headers) */
+.text-cyan { 
+    color: var(--accent-blue); 
+    text-shadow: 0 0 8px rgba(59, 130, 246, 0.3); 
 }
 
+h1, h2, h3 { 
+    text-transform: uppercase; 
+    letter-spacing: 1.5px; 
+    font-weight: 700;
+    color: #ffffff;
+}
+
+/* Module Grid & Professional Module Cards */
 .module-card {
-    background: var(--glass-bg);
+    background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 10px;
     padding: 1.5rem;
-    transition: all 0.3s ease;
+    transition: 0.3s;
     text-align: center;
-    text-decoration: none;
 }
 
 .module-card:hover {
     transform: translateY(-5px);
-    border-color: var(--cyan-glow);
-    box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+    border-color: var(--accent-blue);
+    background: rgba(59, 130, 246, 0.05);
 }
 
-/* Forms & Inputs */
+/* Forms & Inputs (Grey Background) */
 .form-control, select {
-    background: rgba(0, 0, 0, 0.4) !important;
+    background: rgba(176, 176, 176, 0.7) !important;
     border: 1px solid var(--border-color) !important;
-    color: white !important;
+    color: #f8fafc !important;
     padding: 12px !important;
-    border-radius: 8px !important;
 }
 
 .form-control:focus {
-    border-color: var(--cyan-glow) !important;
-    box-shadow: 0 0 8px rgba(0, 242, 255, 0.4) !important;
-    outline: none;
+    border-color: var(--primary-blue) !important;
+    box-shadow: 0 0 10px rgba(30, 64, 175, 0.4) !important;
 }
 
-.blue-input {
-    background: rgba(0, 123, 255, 0.05) !important;
-    border-color: #005a8c !important;
-}
-
-/* Buttons */
+/* Buttons (Primary Blue & Success Green) */
 .btn-cyan {
-    background: var(--cyan-glow) !important;
-    color: #010816 !important;
-    font-weight: bold;
+    background: var(--primary-blue) !important;
+    color: #ffffff !important;
+    font-weight: 600;
     border: none;
     padding: 12px 24px;
-    border-radius: 8px;
+    border-radius: 6px;
     text-transform: uppercase;
     transition: 0.3s;
-    text-decoration: none;
-    display: inline-block;
 }
 
 .btn-cyan:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 25px rgba(0, 242, 255, 0.6);
-    cursor: pointer;
+    background: var(--accent-blue) !important;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
 }
 
-/* Tables (Stock/Sales Lists) */
+/* Tables (Professional Grey/Blue Look) */
 .nyondo-table {
     width: 100%;
     border-collapse: collapse;
-    background: rgba(255, 255, 255, 0.02);
 }
 
 .nyondo-table th {
-    background: rgba(0, 242, 255, 0.05);
-    color: var(--cyan-glow);
+    background: rgba(30, 64, 175, 0.3);
+    color: var(--accent-blue);
     padding: 15px;
-    border-bottom: 2px solid var(--border-color);
-    text-transform: uppercase;
-    font-size: 0.85rem;
+    border-bottom: 2px solid var(--primary-blue);
 }
 
 .nyondo-table td {
     padding: 15px;
     border-bottom: 1px solid var(--border-color);
+    background: rgba(160, 159, 159, 0.692);
 }
 
 .nyondo-table tr:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
 }
 
-/* Alerts & Notifications */
-.error-msg { color: var(--error-red); font-size: 0.9rem; padding: 10px; border-radius: 5px; background: rgba(255, 62, 62, 0.1); border: 1px solid var(--error-red); }
-.success-msg { color: var(--success-green); background: rgba(0, 255, 136, 0.1); padding: 10px; border-radius: 5px; }
+/* Success & In-Stock Status (Green) */
+.text-success { color: var(--success-green) !important; }
+.badge-success {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success-green);
+    border: 1px solid var(--success-green);
+    padding: 5px 10px;
+}
 
+/* Notifications (Grey/Slate tint) */
 .notification-item {
     padding: 15px;
-    border-left: 4px solid var(--cyan-glow);
-    background: rgba(255, 255, 255, 0.03);
+    border-left: 4px solid var(--primary-blue);
+    background: rgba(100, 116, 139, 0.05);
     margin-bottom: 10px;
-    border-radius: 0 8px 8px 0;
 }
+
+.glass-card {
+      background: rgba(163, 163, 163, 0.651);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+    .text-cyan { color: #0dcaf0; }
+    .extra-small { font-size: 0.75rem; }
+    
+ .glass-card {
+      background: rgba(167, 165, 165, 0.603);
+      backdrop-filter: blur(15px);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .text-cyan { color: #0dcaf0; }
+    .extra-small { font-size: 0.7rem; }
+    .table-hover tbody tr:hover { background: rgba(13, 202, 240, 0.03); }

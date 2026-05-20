@@ -1,127 +1,75 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const User = require('../models/Users');
+const User = require("../models/Users");
+const passport = require("passport");
 
-<<<<<<< HEAD
-// TODO: EITHER SIGNUP / LOGIN CODES
-
-// GET: Display Login Page
+// GET: Display Login Form 
+// Access at: http://localhost:3000/auth/login
 router.get('/login', (req, res) => {
-    res.render('login', { title: 'Staff Login' });
+    res.render('login', { title: 'Staff Login' }); // Using my 'login.pug'
 });
 
-// POST: Process Login & Role-Based Redirection
-router.post('/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const user = await User.findOne({ email });
-
-        if (user && user.password === password) {
-            // Set session for identifying user in layout and routes
-            req.session.user = {
-                id: user._id,
-                name: user.fullname,
-                role: user.role // attendant, manager, or admin
-            };
-
-            // Role-Based Redirection Logic
-            if (user.role === 'attendant') {
-                return res.redirect('/sales');
-            } else if (user.role === 'manager') {
-                return res.redirect('/stock');
-            } else {
-                return res.redirect('/dashboard'); // Default for Admins
-            }
+// POST: Handle Login with Passport
+router.post('/login', (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+        if (err) return next(err);
+        if (!user) {
+            return res.render('login', { 
+                title: 'Staff Login', 
+                error: info.message || 'Invalid email or password.' 
+            });
         }
 
-        // Error handling for incorrect credentials
-        res.render('login', { 
-            title: 'Staff Login', 
-            error: 'Invalid staff email or password.' 
-        });
+        req.logIn(user, (err) => {
+            if (err) return next(err);
 
+            console.log(`Login Successful: ${user.fullname} (${user.role})`);
+
+            // Role-Based Redirection (Matching your lowercase roles)
+            if (user.role === 'attendant' || user.role === 'Sales Attendant') {
+                return res.redirect('/sales_dashboard');
+            }
+            if (user.role === 'manager' || user.role === 'Store Manager') {
+                return res.redirect('/manager_dashboard');
+            }
+            if (user.role === 'admin' || user.role === 'Accounts') {
+                return res.redirect('/dashboard');
+            }
+            
+            res.redirect('/dashboard');
+        });
+    })(req, res, next);
+});
+
+// GET: Display Registration Form
+// Access at: http://localhost:3000/register
+router.get("/register", (req, res) => {
+    res.render("register", { title: "Staff Registration" });
+});
+
+// POST: Process Registration
+router.post("/register", async (req, res) => {
+    try {
+        const { fullname, phone, nin, role, email, password } = req.body;
+
+        // Validation
+        if (nin.length !== 14) return res.render("register", { error: "NIN must be 14 chars", formData: req.body });
+
+        const newUser = new User({ fullname, phone, nin, role, email, password });
+        await newUser.save();
+
+        res.redirect("/auth/login"); 
     } catch (err) {
-        res.status(500).send("Login Error: " + err.message);
+        res.render("register", { error: "Failed: " + err.message, formData: req.body });
     }
 });
 
-// GET: Logout
-router.get('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) return res.redirect('/dashboard');
-        res.clearCookie('nyondo.sid'); // Must match session name in server.js
-        res.redirect('/'); // Redirect back to Welcome Page
+// Logout
+router.get("/logout", (req, res, next) => {
+    req.logout((err) => {
+        if (err) return next(err);
+        res.redirect("/auth/login");
     });
 });
 
 module.exports = router;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// logout button
-// router.get('/logout', (req, res, next) =>{
-
-//   req.logout( (err)=>{
-
-//     if(err) {
-
-//       return next(err);
-
-//     }
-
-//     res.redirect('/')
-
-//   })
-
-// })
-
-
-
-
-=======
-// GET: Display Registration Form
-router.get('/register', (req, res) => {
-    res.render('register', { title: 'Staff Registration' });
-});
-
-// POST: Process Registration
-router.post('/register', async (req, res) => {
-    try {
-        const { fullname, phone, nin, role, email, password } = req.body;
-// console.log(req.body)
-
-        // TODO:1. :Validation Logic
-        // if (nin.length !== 14) {
-        //     return res.render('register', { error: "NIN must be exactly 14 characters.", formData: req.body });
-        // }
-        // if (!/^\d{10}$/.test(phone)) {
-        //     return res.render('register', { error: "Phone number must be 10 digits.", formData: req.body });
-        // }
-
-        // 2. Save to MongoDB
-        const newUser = new User({ fullname, phone, nin, role, email, password });
-        console.log(newUser)
-        await newUser.save().then(result=>console.log(result)).catch(err=>console.log(err));
-
-        res.redirect('/');
-    } catch (err) {
-        res.render('register', { error: "Error: " + err.message, formData: req.body });
-    }
-});
-
-
-module.exports = router;
->>>>>>> c3721b14a3c45d865b28048217d21b2c8937a7f1
