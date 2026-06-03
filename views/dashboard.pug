@@ -4,40 +4,40 @@ block content
   .container-fluid.mt-2
     .row.mb-4
       .col-md-12.d-flex.justify-content-between.align-items-end
-        div
+        
           h1.text-cyan.fw-bold.mb-0= title
-          p.text-white-50.mb-0 Welcome back, #[span.text-white.fw-bold #{user}] (#[span.text-cyan #{userRole.toUpperCase()}])
-        .text-end
-          span.badge(style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); color: #00f2ff; padding: 10px;") 
+          p.text-black-50.mb-0 Welcome back, #[span.text-black.fw-bold #{user}] (#[span.text- #{userRole.toUpperCase()}])
+      .text-end
+          span.badge(style="background: rgba(255, 255, 255, 0.34); border: 1px solid rgba(255,255,255,0.1); color: #080808; padding: 10px;") 
             | Last Sync: #{new Date().toLocaleTimeString()}
 
     .row.g-4
       .col-md-8
         .row.g-3.mb-4
-          .col-md-3
+          .col-md-4
             .glass-card.text-center
-              h6.text-white-50.small.text-uppercase Stock Items
-              h3.fw-bold.text-white= stats.stock
-          .col-md-3
+              h6.text-.small.text-uppercase Stock Items
+              h3.fw-bold.text-= stats.stock
+          .col-md-4
             .glass-card.text-center
-              h6.text-white-50.small.text-uppercase Today's Sales
-              h3.fw-bold.text-cyan UGX #{stats.sales}
-          .col-md-3
+              h6.text-.text-uppercase Today's Sales
+              h3.fw-bold.text- UGX #{stats.sales}
+          .col-md-4
             .glass-card.text-center
-              h6.text-white-50.small.text-uppercase Supplier Credit
+              h6.text-.small.text-uppercase Supplier Credit
               h3.fw-bold(style="color: #ff4444") UGX #{stats.credit}
-          .col-md-3
+          .col-md-4
             .glass-card.text-center
-              h6.text-white-50.small.text-uppercase Deposits
+              h6.text-.small.text-uppercase Deposits
               h3.fw-bold.text-cyan UGX #{stats.deposits}
               
         .row.g-3.mb-4
           .col-md-6
             .glass-card
               .d-flex.justify-content-center.mb-3
-                h6.text-white Recent Sales History
-              table.table.table-dark.table-borderless.text-center.small
-                thead: tr.text-white-50
+                h6.text- Recent Sales History
+              table.table.table-white.table-borderless.text-center.small
+                thead: tr.text-
                   th Product
                   th Qty
                   th Total (UGX)
@@ -54,9 +54,9 @@ block content
           .col-md-6
             .glass-card
               .d-flex.justify-content-center.mb-3
-                h6.text-white Critical Low Stock
-              table.table.table-dark.table-borderless.text-center.small
-                thead: tr.text-white-50
+                h6.text- Critical Low Stock
+              table.table.table-white.table-borderless.text-center.small
+                thead: tr.text-
                   th Product
                   th Current Qty
                 tbody
@@ -68,13 +68,13 @@ block content
                   else
                     tr: td(colspan="2").text-success Stock levels are optimal.
                       //- Inside your Admin/Manager Dashboard
-                    //-TODO .glass-card.p-3
-                    //- h6.text-cyan.small RECENT RESTOCKS
-                    //- each item in inventory
-                    //-   if item.lastStocked > new Date(Date.now() - 48*60*60*1000)
-                    //-     .d-flex.justify-content-between.small.mb-2
-                    //-        span #{item.itemName}
-                    //-        span.text-success + New Stock Added
+                    TODO .glass-card.p-3
+                    h6.text-.small RECENT RESTOCKS
+                    each item in inventory
+                      if item.lastStocked > new Date(Date.now() - 48*60*60*1000)
+                        .d-flex.justify-content-between.small.mb-2
+                           span #{item.itemName}
+                           span.text-success + New Stock Added
 
         .row.g-3
           each mod in modules
@@ -83,15 +83,15 @@ block content
                 .d-flex.align-items-start
                   .display-6.me-3= mod.icon
                   div
-                    h5.text-cyan.fw-bold.mb-1= mod.name
-                    p.small.text-white-50= mod.desc
-                    a.btn-cyan.btn-sm.mt-2.stretched-link(href=mod.link style="font-size: 0.7rem; color: black; background: #00f2ff; text-decoration: none; padding: 5px 10px; border-radius: 4px;") OPEN MODULE 
+                    h5.text-.fw-bold.mb-1= mod.name
+                    p.small.text-= mod.desc
+                    a.btn-cyan.btn-sm.mt-2.stretched-link(href=mod.link style="font-size: 0.7rem; color: white; background: #003cff; text-decoration: none; padding: 5px 10px; border-radius: 4px;") OPEN MODULE 
 
       .col-md-4
         .glass-card.h-100.p-0.overflow-hidden
-          .p-3.border-bottom(style="border-color: rgba(255,255,255,0.1) !important;")
+          .p-3.border-bottom(style="border-color: rgba(255, 255, 255, 0) !important;")
             .d-flex.justify-content-between.align-items-center
-              h6.mb-0.fw-bold.text-white Real-time Activity
+              h6.mb-0.fw-bold.text- Real-time Activity
               if notifications && notifications.length > 0
                 span.badge.bg-danger.rounded-pill= notifications.length
               else
@@ -101,11 +101,11 @@ block content
               each alert in notifications
                 .p-3.border-bottom(style="border-color: rgba(255,255,255,0.1) !important;")
                   .d-flex.justify-content-between.mb-1
-                    small.fw-bold.text-cyan= alert.staffRole
-                    small.text-white-50(style="font-size: 0.7rem;")= alert.time
-                  p.mb-0.small.text-white= alert.message
+                    small.fw-bold.text-= alert.staffRole
+                    small.text-(style="font-size: 0.7rem;")= alert.time
+                  p.mb-0.small.text-= alert.message
                   if alert.customer
-                    small.text-white-50 Customer: #{alert.customer}
+                    small.text- Customer: #{alert.customer}
             else
               .p-5.text-center
-                p.text-white.mb-0 No new activity.
+                p.text-.mb-0 No new activity.

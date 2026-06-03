@@ -4,44 +4,44 @@ block content
   .container-fluid.py-4
     .row.mb-4
       .col-md-8
-        h2.text-cyan Store Manager Control Center
+        h2.text- Store Manager Control Center
         p.text-muted Branch: #{user.branch} | Inventory Overview
       .col-md-4.text-end
-        a.btn.btn-cyan.btn-lg.shadow(href="/products") Register New Stock
+        a.btn-cyan.btn-.btn-lg.shadow(href="/products") Register New Stock
 
     //- Manager Stats Row
     .row.mb-4
       .col-md-3
         .glass-card.p-3.text-center.border-primary
           h6.text-muted TOTAL INVENTORY VALUE
-          h3.text-cyan UGX #{inventoryValue.toLocaleString()}
-          small.text-muted (Based on Cost Price)
+          h3.text-c UGX #{inventoryValue.toLocaleString()}
+          small.text- (Based on Cost Price)
       
       .col-md-3
         .glass-card.p-3.text-center.border-info
           h6.text-muted TOTAL ITEMS
           h3.text-info #{totalItems}
-          small.text-muted Unique SKUs in Store
+          small.text- Number of unique products in stock
 
       .col-md-3
         .glass-card.p-3.text-center.border-warning
           h6.text-muted LOW STOCK
           h3.text-warning #{lowStock}
-          small.text-muted Items need restocking
+          small.text- Items need restocking
 
       .col-md-3
         .glass-card.p-3.text-center.border-danger
           h6.text-muted OUT OF STOCK
           h3.text-danger #{outOfStock}
-          small.text-muted Immediate action required
+          small.text- Immediate action required
 
     .row
       //- Stock Level Tracking Table
       .col-md-8
         .glass-card
           .d-flex.justify-content-between.align-items-center.mb-3
-            h5.text-cyan Inventory Level Monitor
-            .badge.bg-dark.text-cyan Real-time Sync
+            h5.text- Inventory Level Monitor
+            .badge.bg-dark.text- Real-time Sync
           
           .table-responsive
             table.table.table-hover
@@ -73,29 +73,29 @@ block content
                   tr
                     td(colspan="5").text-center No inventory records.
 
-      //- Manager Quick Tasks Sidebar
+        ///- Manager Quick Tasks Sidebar
       .col-md-4
-        //- Restock Notifications
-        .glass-card.mb-4
-          h6.text-warning.mb-3 Restock Priority List
-          if lowStock > 0
-            each item in inventory
-              //- UPDATED LOGIC: Only shows items hitting their specific threshold
-              if item.quantity > 0 && item.quantity <= item.lowStockLevel
-                .d-flex.justify-content-between.align-items-center.mb-2.p-2.rounded(style="background: rgba(255,255,255,0.05)")
-                  span.small #{item.itemName}
-                  span.badge.bg-warning.text-dark #{item.quantity} left
-          else
-            p.small.text-success.text-center All levels optimal.
+          //- Restock Notifications (Low Stock Items)
+          .glass-card.mb-4
+            h6.text-danger.mb-3 Restock Priority List
+            if lowStock > 0
+              each item in inventory
+                if item.quantity > 0 && item.quantity <= item.lowStockLevel
+                  .d-flex.justify-content-between.align-items-center.mb-2.p-2.rounded(style="background: rgba(255,255,255,0.05)")
+                    span.small #{item.itemName}
+                    span.badge.bg-warning.text-dark #{item.quantity} left
+            else
+              p.small.text-success.text-center All levels optimal.
 
-        //- Price Management Shortcut
-        //- Inside your Admin/Manager Dashboard
-        .glass-card.p-3
-          h6.text-cyan.small RECENT RESTOCKS
-          each item in inventory
-            if item.lastStocked > new Date(Date.now() - 48*60*60*1000)
-              .d-flex.justify-content-between.small.mb-2
-                span #{item.itemName}
-                span.text-success + New Stock Added
+          //- RECENT RESTOCKS (Items recently added to)
+          .glass-card.p-3
+            h6.text-.small RECENT RESTOCKS
+            if recentlyRestocked && recentlyRestocked.length > 0
+              each item in recentlyRestocked
+                .d-flex.justify-content-between.align-items-center.small.mb-2
+                  span #{item.itemName}
+                  span.badge.bg-success.extra-small + New Stock Added
+            else
+              p.text-muted.small.text-center No restocks in the last 48 hours.
           //- a.btn.btn-sm.btn-outline-info.w-100(href=`/products/edit/${item._id}`) Manage Prices
           

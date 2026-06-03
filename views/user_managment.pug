@@ -1,0 +1,37 @@
+extends layout
+
+block content
+  .container.py-5
+    .row.mb-4
+      .col-12
+        h2.text-cyan.fw-bold  User System Management
+        p.text-white-50 Total Registered Staff: #{users.length}
+    .row.justify-content-center
+      .col-md-6
+        .glass-card
+          h4.text-cyan Update Staff: #{staff.fullname}
+          hr.border-secondary
+          form(action=`/user/edit/${staff._id}` method="POST")
+            .mb-3
+              label.text-white-50 Full Name
+              input.form-control(type="text" name="fullname" value=staff.fullname required)
+            .row
+              .col-md-6.mb-3
+                label.text-white-50 Phone
+                input.form-control(type="tel" name="phone" value=staff.phone required)
+              .col-md-6.mb-3
+                label.text-white-50 NIN
+                input.form-control(type="text" name="nin" value=staff.nin required)
+            .mb-3
+              label.text-white-50 Role
+              select.form-select(name="role")
+                option(value="attendant" selected=staff.role==='attendant') Sales Attendant
+                option(value="manager" selected=staff.role==='manager') Store Manager
+                option(value="admin" selected=staff.role==='admin') Accounts/Admin
+            .mb-4
+              label.text-white-50 Email
+              input.form-control(type="email" name="email" value=staff.email required)
+            
+            .d-grid.gap-2
+              button.btn.btn-cyan(type="submit") Save Changes
+              a.btn.btn-outline-secondary(href="/users") Cancel

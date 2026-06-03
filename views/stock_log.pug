@@ -5,7 +5,7 @@ block content
     .row.align-items-center.mb-4
       .col-md-7
         h2.text-cyan.fw-bold  Stock Log
-        p.text-white-50 Live updates on hardware inventory, prices, and arrivals.
+        p.text- Live updates on hardware inventory, prices, and arrivals.
       .col-md-5.text-end
         .badge.bg-dark.border.border-secondary.p-2
           i.bi.bi-clock-history.me-2
@@ -13,22 +13,18 @@ block content
 
     .glass-card.p-0.overflow-hidden
       .table-responsive
-        table.table.table-dark.table-hover.align-middle.mb-0
+        table.table.table-white.table-hover.align-middle.mb-0
           thead.bg-dark
             tr
-              th.ps-4 ITEM & CATEGORY
+              th.ps-4 ITEM 
               th.text-center CURRENT STOCK
               th RETAIL PRICE
-              th.text-end.pe-4 STATUS & NOTICES
           tbody
             each item in inventory
               tr
                 //- Item Name & Category
                 td.ps-4
-                  .fw-bold.text-white #{item.itemName}
-                  small.text-info #{item.category}
-                
-                //- Stock Level with Visual Alerts
+                  .fw-bold.text- #{item.itemName}
                 td.text-center
                   if item.flags.isLow
                     span.text-danger.fw-bold #{item.quantity}
@@ -37,27 +33,10 @@ block content
                     span.badge.bg-danger OUT
                   else
                     span.text-success.fw-bold #{item.quantity}
-                
-                //- Price with Update Icon
                 td
                   span UGX #{item.retailPrice.toLocaleString()}
                   if item.flags.isPriceChanged
                     i.bi.bi-tag-fill.text-warning.ms-2(title="Price recently updated")
-                
-                //- Notice Badges
-                td.text-end.pe-4
-                  if item.flags.isNew
-                    span.badge.bg-info.text-dark.me-1 NEW
-                  if item.flags.isRestocked
-                    span.badge.bg-success.me-1 RESTOCKED
-                  if item.flags.isPriceChanged
-                    span.badge.bg-warning.text-dark.me-1 PRICE UPDATE
-                  if !item.flags.isNew && !item.flags.isRestocked && !item.flags.isPriceChanged && !item.flags.isLow
-                    span.text-muted.extra-small.opacity-50 No changes
-            else
-              tr
-                td(colspan="4").text-center.py-5
-                  p.text-muted No stock items found in the database.
 
   
     

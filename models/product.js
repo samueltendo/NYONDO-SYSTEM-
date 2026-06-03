@@ -1,4 +1,3 @@
-// 2. PRODUCT SCHEMA
 const mongoose = require('mongoose');
 const ProductSchema = new mongoose.Schema({
     itemName: String,
@@ -7,7 +6,7 @@ const ProductSchema = new mongoose.Schema({
     quantity: { type: Number, default: 0 },
     costPrice: Number,
     retailPrice: Number,
-    lowStockLevel: { type: Number, default: 5 },
+    lowStockLevel: { type: Number,  },
     createdAt: { type: Date, default: Date.now }
 });
 module.exports = mongoose.model('Product', ProductSchema);

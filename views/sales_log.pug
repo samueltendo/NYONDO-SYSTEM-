@@ -2,7 +2,7 @@ extends layout
 
 block content
   .container.py-5
-    h2.text-cyan.mb-4 Detailed Sales History: #{user.fullname}
+    h2.text.mb-4 Detailed Sales History: #{user.fullname}
 
     if dailySummary && dailySummary.length > 0
       each day in dailySummary
@@ -14,21 +14,23 @@ block content
           
           //- Items Table for this specific day
           .table-responsive
-            table.table.table-dark.table-sm.mb-0
+            table.table.table-white.table-sm.mb-0
               thead
-                tr.extra-small.text-white-50
-                  th.ps-4 ITEM NAME
-                  th.text-center QTY
-                  th.text-end.pe-4 AMOUNT
+                tr.extra-small.text
+                  th.ps-4 Item
+                  th.text-center Quantity
+                  th.text-center Transport Fee
+                  th.text-end.pe-4 Amount
               tbody
                 each item in day.items
                   tr
                     td.ps-4 #{item.name}
                     td.text-center #{item.qty}
+                    td.text-center UGX #{(item.transportFee || 0).toLocaleString()}
                     td.text-end.pe-4 #{item.amount.toLocaleString()}
     else
       .glass-card.p-5.text-center
-        p.text-muted No sales records found for your account.
+        p.text- No sales records found for your account.
 
  
     

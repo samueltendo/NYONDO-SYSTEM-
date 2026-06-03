@@ -6,8 +6,8 @@ block content
       .col-md-6
         .glass-card.shadow-lg
           .text-center.mb-4
-            h2.text-cyan.fw-bold Edit Product Details
-            p.text-white-50 System Reference ID: #{item._id}
+            h2.text-.fw-bold Edit Product Details
+            //- p.text- System Reference ID: #{item._id}
           
           if error
             .alert.alert-danger.py-2.small.mb-3 #{error}
@@ -15,42 +15,41 @@ block content
           //- FIXED: Added enctype for image uploads
           form(action=`/products/edit/${item._id}` method="POST" enctype="multipart/form-data")
             .mb-3
-              label.text-white-50.small Item Name
+              label.text-.small Item Name
               input.form-control.bg-dark.text-white.border-secondary(type="text" name="itemName" value=item.itemName required)
             
             .row
               .col-md-6.mb-3
-                label.text-white-50.small Category
+                label.text-.small Category
                 select.form-select.bg-dark.text-white.border-secondary(name="category" required)
                   each cat in ['Steel', 'Cement', 'Roofing', 'Plumbing', 'Electrical', 'Paint', 'Wood', 'Wire Mesh', 'Other']
                     option(value=cat selected=item.category === cat) #{cat}
               
               .col-md-6.mb-3
-                label.text-white-50.small Current Stock Level
+                label.text-.small Current Stock Level
                 input.form-control.bg-dark.text-white.border-secondary(type="number" name="quantity" value=item.quantity required)
             
             .row
               .col-md-6.mb-3
-                label.text-white-50.small Cost Price (UGX)
+                label.text-.small Cost Price (UGX)
                 input.form-control.bg-dark.text-white.border-secondary(type="number" name="costPrice" value=item.costPrice required)
               
               .col-md-6.mb-3
-                label.text-white-50.small Retail Price (UGX)
+                label.text-.small Retail Price (UGX)
                 input.form-control.bg-dark.text-white.border-secondary(type="number" name="retailPrice" value=item.retailPrice required)
             
             .mb-3
-              label.text-white-50.small Low Stock Alert Level
+              label.text-.small Low Stock Alert Level
               input.form-control.bg-dark.text-white.border-secondary(type="number" name="lowStockLevel" value=item.lowStockLevel || 5 required)
 
             //- NEW: Image Upload Field
             .mb-4
-              label.text-white-50.small Update Product Image (Optional)
+              label.text-.small Update Product Image (Optional)
               input.form-control.bg-dark.text-white.border-secondary(type="file" name="productImage" accept="image/*")
 
             .d-grid.gap-2.mt-4
-              button.btn.btn-cyan(type="submit") Save Updated Info
-              a.btn.btn-outline-secondary(href="/products") Cancel & Go Back
+              button.btn-cyan.btn-(type="submit") Save Updated Info
+              
+          a.btn-cyan.btn-(href="/products") Cancel & Go Back
 
-  style.
-    .btn-cyan { background-color: #0dcaf0; color: #000; font-weight: bold; border: none; padding: 10px; border-radius: 5px; }
-    .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 2rem; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); }
+  

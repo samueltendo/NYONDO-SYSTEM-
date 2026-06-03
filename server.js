@@ -7,6 +7,7 @@ const LocalStrategy = require("passport-local").Strategy;
 const connectDB = require("./config/db");
 const bcrypt = require("bcryptjs");
 
+
 // Import Models
 const User = require("./models/Users");
 
@@ -96,6 +97,8 @@ const creditRoutes = require("./routes/suppliercreditRoutes");
 const depositsRoutes = require("./routes/depostischemeRoutes");
 const slasdashboardRoutes = require("./routes/salesDashboard");
 const managerdashboardRoutes = require("./routes/manager_dashboard");
+const userRoutes = require('./routes/userRoutes');
+
 
 // 8. MOUNT ROUTES
 app.use("/", indexRoutes);
@@ -114,6 +117,7 @@ app.use("/credit", creditRoutes); // Debt Tracking
 app.use("/deposits", depositsRoutes); // Savings Schemes
 app.use("/sales_dashboard", slasdashboardRoutes); // Sales Dashboard
 app.use("/manager_dashboard", managerdashboardRoutes); // Manager Dashboard
+app.use('/users', userRoutes);
 // 9. HELPER ROUTES
 app.get("/transport", (req, res) => {
   res.render("layout", { title: "Transport Logs" });

@@ -1,62 +1,23 @@
 const express = require('express');
 const router = express.Router();
 
-/**
- * @route   GET /
- * @desc    System Landing Page - Handles Role-Based Entry
- */
-router.get('/', (req, res) => {
-    // 1. If user is logged in, redirect based on their specific role
-    if (req.session && req.session.user) {
-        const role = req.session.user.role;
-        
-        if (role === 'attendant') {
-            return res.redirect('/sales'); // Sales Attendant dashboard
-        } else if (role === 'manager') {
-            return res.redirect('/stock'); // Store Manager dashboard
-        } else {
-            return res.redirect('/dashboard'); // Admin/ Accounts dashboard
-        }
-    }
-    
-    // 2. Otherwise, show the professional Welcome Page
-    res.render('welcome', { 
-        title: 'Welcome | Nyondo General Hardware' 
-    });
-});
+const Deposit = require('../models/deposit');
 
-/**
- * @route   GET /health
- * @desc    System Health Check (Monitoring for Hardware Admin)
- */
-router.get('/health', (req, res) => {
-    res.status(200).json({
-        system: "NYONDOSTOCK",
-        status: "Online",
-        database: "MongoDB Connected",
-        timestamp: new Date().toLocaleString(),
-        version: "1.0.4"
-    });
-});
-
-// /**
-//  * @route   GET /welcome
-//  * @desc    System Welcome Page
-//  */
-// router.get('/welcome', (req, res) => {
-//     res.render('layout', { 
-//         title: 'Welcome | Nyondo Stock',
-//         content: 'Nyondo Stock is a custom digitized inventory solution for NYONDO General Hardware, managing stock, sales, and automated delivery logistics.' 
-//     });
-// });
-
-
-
-// GET: View Staff List
+// GET: Display Ledger  
 router.get('/', async (req, res) => {
-    const staff = await User.find().sort({ fullname: 1 });
-    res.render('users', { title: 'Staff Directory', staff });
+    try {
+        const accounts = await Deposit.find().sort({ date: -1 });
+        res.render('depositScheme', {
+            title: 'Deposit Scheme Management',
+            accounts: accounts
+        });
+    } catch (err) {
+        res.status(500).send("Error loading deposits");
+    }
 });
+
+
+
 
 
 module.exports = router;

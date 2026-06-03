@@ -1,17 +1,16 @@
 :root {
-    --bg-color: #b2b3b4ec;          /* Deep Slate Background */
-    --primary-blue: #1e40af;     /* Industrial Blue */
+    --bg-color: #b2b3b4ec;          /*  Background */
+    --primary-blue: #1e40af;     
     --accent-blue: #3b82f6;      /* Bright Blue for Glow */
-    --success-green: #10b981;    /* Professional Green for Sales/Stock */
-    --neutral-grey: #64748b;     
-    --glass-bg: rgba(255, 255, 255, 0.03);
+    --success-green: #10b981;    /*  Green for Sales/Stock */
+    --neutral-grey: #52719c;     
+    --glass-bg: rgba(255, 255, 255, 0.468);
     --border-color: rgba(255, 255, 255, 0.1);
     --error-red: #ef4444;
 }
 
 body {
-    /* Soft Blue/Grey Gradient */
-    background: radial-gradient(circle at top, #1e293b, #0d1117);
+    background: radial-gradient(circle at top, #e0e1e1aa, #e3eeffd4);
     background-attachment: fixed;
     color: #f1f5f9;
     font-family: 'Inter', 'Segoe UI', sans-serif;
@@ -19,7 +18,7 @@ body {
     margin: 0;
 }
 
-/* Glassmorphism with Slate/Grey Tint */
+/* Glassmorphism Frame */
 .glass-card {
     background: var(--glass-bg);
     backdrop-filter: blur(12px);
@@ -27,26 +26,21 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 10px 25px rgba(206, 205, 205, 0.089);
     transition: 0.3s;
 }
 
-/* Sidebar & Navigation (Industrial Blue Theme) */
-.sidebar {
-    background: rgba(15, 23, 42, 0.9) !important;
-    border-right: 1px solid var(--border-color);
-}
-
+/*  Navigation  */
 .nav-link:hover, .active-link {
-    background: rgba(59, 130, 246, 0.1) !important;
-    color: var(--accent-blue) !important;
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent-blue);
     border-left: 4px solid var(--primary-blue);
 }
 
-/* Typography (Professional Blue Headers) */
+/*  (Blue Headers) */
 .text-cyan { 
     color: var(--accent-blue); 
-    text-shadow: 0 0 8px rgba(59, 130, 246, 0.3); 
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.358);     
 }
 
 h1, h2, h3 { 
@@ -56,7 +50,7 @@ h1, h2, h3 {
     color: #ffffff;
 }
 
-/* Module Grid & Professional Module Cards */
+/* Module Grid &  Module Cards */
 .module-card {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border-color);
@@ -74,21 +68,21 @@ h1, h2, h3 {
 
 /* Forms & Inputs (Grey Background) */
 .form-control, select {
-    background: rgba(176, 176, 176, 0.7) !important;
-    border: 1px solid var(--border-color) !important;
-    color: #f8fafc !important;
-    padding: 12px !important;
+    background: rgba(176, 176, 176, 0.7);
+    border: 1px solid var(--border-color);
+    color: #f8fafc;
+    padding: 12px;
 }
 
 .form-control:focus {
-    border-color: var(--primary-blue) !important;
-    box-shadow: 0 0 10px rgba(30, 64, 175, 0.4) !important;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
 /* Buttons (Primary Blue & Success Green) */
 .btn-cyan {
-    background: var(--primary-blue) !important;
-    color: #ffffff !important;
+    background: var(--primary-blue);
+    color: #ffffff ;
     font-weight: 600;
     border: none;
     padding: 12px 24px;
@@ -98,18 +92,18 @@ h1, h2, h3 {
 }
 
 .btn-cyan:hover {
-    background: var(--accent-blue) !important;
+    background: var(--accent-blue);
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
 }
 
-/* Tables (Professional Grey/Blue Look) */
+/* Tables */
 .nyondo-table {
     width: 100%;
     border-collapse: collapse;
 }
 
 .nyondo-table th {
-    background: rgba(30, 64, 175, 0.3);
+    background: rgba(0, 0, 0, 0.42);
     color: var(--accent-blue);
     padding: 15px;
     border-bottom: 2px solid var(--primary-blue);
@@ -126,7 +120,7 @@ h1, h2, h3 {
 }
 
 /* Success & In-Stock Status (Green) */
-.text-success { color: var(--success-green) !important; }
+.text-success { color: var(--success-green); }
 .badge-success {
     background: rgba(16, 185, 129, 0.2);
     color: var(--success-green);
@@ -134,7 +128,7 @@ h1, h2, h3 {
     padding: 5px 10px;
 }
 
-/* Notifications (Grey/Slate tint) */
+/* Notifications */
 .notification-item {
     padding: 15px;
     border-left: 4px solid var(--primary-blue);
@@ -143,12 +137,12 @@ h1, h2, h3 {
 }
 
 .glass-card {
-      background: rgba(163, 163, 163, 0.651);
+      background: rgba(163, 163, 163, 0.97);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 10px;
     }
-    .text-cyan { color: #0dcaf0; }
+    .text-cyan { color: #000000; }
     .extra-small { font-size: 0.75rem; }
     
  .glass-card {
@@ -157,6 +151,9 @@ h1, h2, h3 {
       border-radius: 15px;
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
-    .text-cyan { color: #0dcaf0; }
+    .text-cyan { color: #070707; }
     .extra-small { font-size: 0.7rem; }
     .table-hover tbody tr:hover { background: rgba(13, 202, 240, 0.03); }
+
+
+   

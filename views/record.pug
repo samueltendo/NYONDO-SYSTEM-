@@ -1,74 +1,74 @@
-extends layout
+//- extends layout
 
-block content
-  .container.py-5
-    .row.justify-content-center
-      .col-lg-6
-        .glass-card.p-4.shadow-lg.border-0
-          //- Header
-          .text-center.mb-4
-            h2.text-cyan.fw-bold 🛒 Record New Sale
-            p.text-white-50 Enter the customer and product details below
+//- block content
+//-   .container.py-5
+//-     .row.justify-content-center
+//-       .col-lg-6
+//-         .glass-card.p-4.shadow-lg.border-0
+//-           //- Header
+//-           .text-center.mb-4
+//-             h2.text-cyan.fw-bold 🛒 Record New Sale
+//-             p.text-white-50 Enter the customer and product details below
 
-          //- Alert messages for errors or stock issues
-          if error
-            .alert.alert-danger.alert-dismissible.fade.show.small(role="alert")
-              i.bi.bi-exclamation-triangle-fill.me-2
-              | #{error}
-              button.btn-close(type="button" data-bs-dismiss="alert")
+//-           //- Alert messages for errors or stock issues
+//-           if error
+//-             .alert.alert-danger.alert-dismissible.fade.show.small(role="alert")
+//-               i.bi.bi-exclamation-triangle-fill.me-2
+//-               | #{error}
+//-               button.btn-close(type="button" data-bs-dismiss="alert")
 
-          form(action="/sales/record" method="POST")
-            //- Section 1: Customer Information
-            .section-label.mb-2.small.text-cyan CUSTOMER DETAILS
-            .row.g-3.mb-4
-              .col-md-12
-                label.form-label.text-white-50 Full Name
-                input.form-control.bg-dark.text-white.border-secondary(type="text" name="customerName" required placeholder="e.g. John Doe")
-              .col-md-12
-                label.form-label.text-white-50 Contact Number
-                input.form-control.bg-dark.text-white.border-secondary(type="text" name="customerContact" required placeholder="07XXXXXXXX")
+//-           form(action="/sales/record" method="POST")
+//-             //- Section 1: Customer Information
+//-             .section-label.mb-2.small.text-cyan CUSTOMER DETAILS
+//-             .row.g-3.mb-4
+//-               .col-md-12
+//-                 label.form-label.text-white-50 Full Name
+//-                 input.form-control.bg-dark.text-white.border-secondary(type="text" name="customerName" required placeholder="e.g. John Doe")
+//-               .col-md-12
+//-                 label.form-label.text-white-50 Contact Number
+//-                 input.form-control.bg-dark.text-white.border-secondary(type="text" name="customerContact" required placeholder="07XXXXXXXX")
 
-            //- Section 2: Product & Quantity
-            .section-label.mb-2.small.text-cyan PRODUCT DETAILS
-            .row.g-3.mb-4
-              .col-md-12
-                label.form-label.text-white-50 Select Item
-                select.form-select.bg-dark.text-white.border-secondary(name="productId" required)
-                  option(value="" disabled selected) -- Choose a product --
-                  each item in inventory
-                    option(value=item._id) #{item.itemName} (Stock: #{item.quantity} | UGX #{item.retailPrice.toLocaleString()})
+//-             //- Section 2: Product & Quantity
+//-             .section-label.mb-2.small.text-cyan PRODUCT DETAILS
+//-             .row.g-3.mb-4
+//-               .col-md-12
+//-                 label.form-label.text-white-50 Select Item
+//-                 select.form-select.bg-dark.text-white.border-secondary(name="productId" required)
+//-                   option(value="" disabled selected) -- Choose a product --
+//-                   each item in inventory
+//-                     option(value=item._id) #{item.itemName} (Stock: #{item.quantity} | UGX #{item.retailPrice.toLocaleString()})
               
-              .col-md-6
-                label.form-label.text-white-50 Quantity
-                input.form-control.bg-dark.text-white.border-secondary(type="number" name="quantitySold" min="1" required)
+//-               .col-md-6
+//-                 label.form-label.text-white-50 Quantity
+//-                 input.form-control.bg-dark.text-white.border-secondary(type="number" name="quantitySold" min="1" required)
               
-              .col-md-6
-                label.form-label.text-white-50 Distance (KM)
-                input.form-control.bg-dark.text-white.border-secondary(type="number" name="distanceKm" step="0.1" value="0")
-                small.text-info.extra-small + 3,000 UGX per KM
+//-               .col-md-6
+//-                 label.form-label.text-white-50 Distance (KM)
+//-                 input.form-control.bg-dark.text-white.border-secondary(type="number" name="distanceKm" step="0.1" value="0")
+//-                 small.text-info.extra-small + 3,000 UGX per KM
 
-            //- Action Buttons
-            .d-grid.gap-2.mt-4
-              button.btn.btn-cyan.py-2.fw-bold(type="submit") 
-                i.bi.bi-printer-fill.me-2
-                | Complete Sale & Print Receipt
-              a.btn.btn-outline-secondary.btn-sm(href="/sales") Cancel & Return
+//-             //- Action Buttons
+//-             .d-grid.gap-2.mt-4
+//-               button.btn.btn-cyan.py-2.fw-bold(type="submit") 
+//-                 i.bi.bi-printer-fill.me-2
+//-                 | Complete Sale & Print Receipt
+//-               a.btn.btn-outline-secondary.btn-sm(href="/sales") Cancel & Return
 
-    //- Optional: UI CSS for this specific page
-    style.
-      .glass-card {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 15px;
-      }
-      .text-cyan { color: #0dcaf0; }
-      .btn-cyan { background-color: #0dcaf0; color: #000; }
-      .btn-cyan:hover { background-color: #0baccc; color: #000; }
-      .section-label { 
-        letter-spacing: 1px; 
-        font-weight: bold; 
-        border-bottom: 1px solid rgba(13, 202, 240, 0.3);
-        display: inline-block;
-      }
-      .extra-small { font-size: 0.75rem; }
+//-     //- Optional: UI CSS for this specific page
+//-     style.
+//-       .glass-card {
+//-         background: rgba(255, 255, 255, 0.05);
+//-         backdrop-filter: blur(15px);
+//-         border: 1px solid rgba(255, 255, 255, 0.1);
+//-         border-radius: 15px;
+//-       }
+//-       .text-cyan { color: #0dcaf0; }
+//-       .btn-cyan { background-color: #0dcaf0; color: #000; }
+//-       .btn-cyan:hover { background-color: #0baccc; color: #000; }
+//-       .section-label { 
+//-         letter-spacing: 1px; 
+//-         font-weight: bold; 
+//-         border-bottom: 1px solid rgba(13, 202, 240, 0.3);
+//-         display: inline-block;
+//-       }
+//-       .extra-small { font-size: 0.75rem; }

@@ -2,8 +2,8 @@ extends layout
 
 block content
   .container-fluid.py-4
-    h2.text-cyan.fw-bold.mb-4  Manager - Stock Tracking
-    p.text-white-50.mb-4 Monitor inventory levels, identify best sellers, and track items nearing expiry or low stock.
+    h2.text.fw-bold.mb-4  Manager - Stock Tracking
+    p.text.mb-4 Monitor inventory levels, identify best sellers, and track items nearing expiry or low stock.
 
     .row.g-4
       //- Card 1: Best Sellers
@@ -45,7 +45,7 @@ block content
     //- Main Detailed List
     .mt-5
       .glass-card.p-0
-        table.table.table-dark.table-hover.mb-0
+        table.table.table-white.table-hover.mb-0
           thead
             tr.small.text-white-50
               th ITEM
@@ -80,6 +80,5 @@ block content
                 td #{item._id}
                 td #{item.category}
                 td #{item.quantity}
-                //- td UGX #{item.retailPrice.toLocaleString()}
                 td #{item.totalSold} sold
-                td: span.badge.bg-success BEST SELLER
+                td: span.badge.bg-success BEST SELLS 

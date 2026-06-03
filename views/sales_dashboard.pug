@@ -7,34 +7,34 @@ block content
         h2.text-cyan Hello, #{user.fullname}
         p.text-muted Branch: #{user.branch} | Desk: Sales Point A
       .col-md-4.text-end
-        a.btn.btn-cyan.btn-lg.shadow(href="/sales")  Record New Sale
+        a.btn-cyan.btn-.btn-lg.shadow(href="/sales")  Record New Sale
 
     //- Quick Stats Row
     .row.mb-4
       .col-md-4
         .glass-card.text-center.p-4.border-primary
           h6.text-muted TODAY'S SALES
-          h2.text-cyan UGX #{totalCash.toLocaleString()}
+          h2.text- UGX #{totalCash.toLocaleString()}
           small.text-success #{todaySales.length} Transactions Completed
       
       .col-md-4
         .glass-card.text-center.p-4.border-warning
           h6.text-muted STOCK ALERTS
           h2.text-warning #{lowStockItems.length}
-          small.text-muted Items need restocking
+          small.text- Items need restocking
 
       .col-md-4
-        .glass-card.text-center.p-4.border-info
-          h6.text-muted SYSTEM STATUS
-          h2.text-info Online
-          small.text-muted Database Connected
+        .glass-card.p-4.text-center.border-danger
+          h6.text-muted OUT OF STOCK
+          h2.text-danger #{outOfStock}
+          small.text- Immediate action required
 
     .row
       //- Left Column: Personal Sales Log
       .col-md-8
         .glass-card
           .d-flex.justify-content-between.align-items-center.mb-3
-            h5.text-cyan My Recent Sales (Today)
+            h5.text- My Recent Sales (Today)
             a.small(href="/sales/log") View All
           
           .table-responsive

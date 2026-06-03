@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/Users");
 const passport = require("passport");
+const { ensureAuthenticated, ensureRole } = require('../middleware/auth');
 
-// GET: Display Login Form 
-// Access at: http://localhost:3000/auth/login
+// Display Login Form 
 router.get('/login', (req, res) => {
     res.render('login', { title: 'Staff Login' }); // Using my 'login.pug'
 });
@@ -42,26 +42,45 @@ router.post('/login', (req, res, next) => {
 });
 
 // GET: Display Registration Form
-// Access at: http://localhost:3000/register
-router.get("/register", (req, res) => {
-    res.render("register", { title: "Staff Registration" });
+router.get("/register", ensureAuthenticated, ensureRole('admin'), (req, res) => {
+    res.render('register', { title: "Staff Registration" });
 });
 
 // POST: Process Registration
-router.post("/register", async (req, res) => {
+router.post("/register", ensureAuthenticated, ensureRole('admin'), async (req, res) => {
     try {
         const { fullname, phone, nin, role, email, password } = req.body;
 
         // Validation
-        if (nin.length !== 14) return res.render("register", { error: "NIN must be 14 chars", formData: req.body });
+        if (nin.length !== 16) return res.render("register", { error: "NIN must be 16 characters", formData: req.body });
 
         const newUser = new User({ fullname, phone, nin, role, email, password });
         await newUser.save();
+
+        let successMsg = `Registration successful for ${fullname} (${role}). You can now log in.`;
+        console.log(successMsg);
+        let infoMsg = `New user registered: ${fullname} (${role}) with email ${email}`;
+        console.info(infoMsg);
+        let userExists = await User.findOne({ $or: [{ email }, { nin }] });
+        if (userExists) {
+            return res.render('register', { error: "Email or NIN already registered." });
+        }
 
         res.redirect("/auth/login"); 
     } catch (err) {
         res.render("register", { error: "Failed: " + err.message, formData: req.body });
     }
+      
+      const nin = req.body.nin?.toUpperCase();
+
+        const NIN_REGEX = /^[A-Z0-9]{16}$/;
+
+        if (!NIN_REGEX.test(nin)) {
+            return res.render("register", {
+                error: "NIN must be 16 uppercase letters/numbers (e.g., CM12345678901234).",
+                formData: req.body
+            });
+        }
 });
 
 // Logout

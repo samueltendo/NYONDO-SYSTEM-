@@ -5,23 +5,23 @@ block content
     .row.justify-content-center
       .col-md-6
         .glass-card.p-4
-          h2.text-cyan.fw-bold.mb-4  Add New Stock
-          p.text-white-50 Select an item and enter the incoming quantity.
+          h2.text-.fw-bold.mb-4  Add New Stock
+          p.text- Select an item and enter the incoming quantity.
 
           form(action="/products/restock" method="POST")
             .mb-3
-              label.form-label.text-white-50 Select Product
+              label.form-label.text- Select Product
               select.form-select.bg-dark.text-white(name="productId" required)
                 option(value="" disabled selected) -- Select Item --
                 each item in products
                   option(value=item._id) #{item.itemName} (Current: #{item.quantity})
             
             .mb-4
-              label.form-label.text-white-50 Quantity to Add
+              label.form-label.text- Quantity to Add
               input.form-control.bg-dark.text-white(type="number" name="addedQuantity" min="1" required placeholder="e.g. 50")
 
             .d-grid
-              button.btn.btn-cyan(type="submit") 
+              button.btn-cyan.btn-(type="submit") 
                 i.bi.bi-plus-circle.me-2
                 | Update Inventory
 

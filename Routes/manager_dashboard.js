@@ -4,43 +4,36 @@ const Product = require('../models/Product'); // Ensure the path to your model i
 const Sale = require('../models/sales'); 
 const { ensureAuthenticated, ensureRole } = require('../middleware/auth');
 
-// GET: Display Manager Dashboard
 router.get('/', ensureAuthenticated, ensureRole('manager'), async (req, res) => {
     try {
-        // 1. Fetch all inventory records from MongoDB
         const inventory = await Product.find().sort({ itemName: 1 });
+        
+        // --- FOR RECENT RESTOCKS ---
+        const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000);
+        
+        // Find items restocked in the last 48 hours
+        const recentlyRestocked = inventory.filter(item => 
+            item.lastStocked && item.lastStocked > fortyEightHoursAgo
+        );
 
-        // 2. Calculate High-Level Stats for the Dashboard Cards
+        // ... existing stats calculation ...
         const totalItems = inventory.length;
         const outOfStock = inventory.filter(item => item.quantity === 0).length;
-        
-        // DYNAMIC LOGIC: Compare quantity against each item's specific lowStockLevel
-        const lowStock = inventory.filter(item => 
-            item.quantity > 0 && item.quantity <= item.lowStockLevel
-        ).length;
-
-        // 3. Financial Calculation: Total money tied up in stock
+        const lowStock = inventory.filter(item => item.quantity > 0 && item.quantity <= item.lowStockLevel).length;
         const inventoryValue = inventory.reduce((acc, item) => acc + (item.costPrice * item.quantity), 0);
 
-        // 4. Get the 5 most recently added items for the "Recent Activity" section
-        const recentStock = await Product.find().sort({ _id: -1 }).limit(5);
-
-        // 5. Render the Dashboard with all calculated data
         res.render('manager_dashboard', {
             title: 'Store Manager Portal',
-            userRole: req.user.role,
             inventory,
+            recentlyRestocked, 
             totalItems,
             outOfStock,
             lowStock,
             inventoryValue,
-            recentStock,
-            user: req.user // Passport provides the logged-in user details
+            user: req.user
         });
-
     } catch (err) {
-        console.error("Manager Dashboard Error:", err);
-        res.status(500).send("Error loading Manager Dashboard: " + err.message);
+        res.status(500).send("Error loading dashboard: " + err.message);
     }
 });
 

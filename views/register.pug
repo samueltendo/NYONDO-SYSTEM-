@@ -5,32 +5,32 @@ block content
     .row.justify-content-center
       .col-md-6
         .glass-card
-          h4.text-cyan.text-center Staff Registration
+          h4.text-.text-center Staff Registration
           hr.border-secondary
           if error
             .alert.alert-danger #{error}
-          form(action="/auth/register" method="POST")
+          form(action="/auth/login" method="POST")
             .mb-3
-              label.text-white-50 Full Name
+              label.text- Full Name
               input.form-control(type="text" name="fullname" required)
             .row
               .col-md-6.mb-3
-                label.text-white-50 Phone
-                input.form-control(type="tel" name="phone" required)
+                label.text- Phone
+                input.form-control(type="tel" name="phone"  title="Enter a valid 10-digit Ugandan phone number(e.g., 0701234567)" required)
               .col-md-6.mb-3
-                label.text-white-50 NIN
-                input.form-control(type="text" name="nin" required)
+                label.text- NIN
+                input.form-control(type="text" name="nin" oninput="this.value = this.value.toUpperCase();" required)
             .mb-3
-              label.text-white-50 Role
+              label.text- Role
               select.form-select(name="role" required)
                 option(value="attendant") Sales Attendant
                 option(value="manager") Store Manager
                 option(value="admin") Accounts/Admin
             .mb-3
-              label.text-white-50 Email
+              label.text- Email
               input.form-control(type="email" name="email" required)
             .mb-4
-              label.text-white-50 Password
+              label.text- Password
               input.form-control(type="password" name="password" required)
             
             button.btn-cyan.w-100(type="submit") Create Staff Account

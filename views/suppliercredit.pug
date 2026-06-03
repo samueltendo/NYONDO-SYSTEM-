@@ -2,16 +2,15 @@ extends layout
 
 block content
   .container-fluid
-    h1.text-cyan Supplier Credit Management
-    p.text-white-50 Track debts and upcoming payments to hardware suppliers.
+    h1.text- Supplier Credit Management
+    p.text-black-50 Track debts and upcoming payments to hardware suppliers.
 
     .row.g-4
       //- Form: Record New Credit
-      form(action="/credit/products" method="post")
       .col-lg-4
         .glass-card
-          h4.text-cyan New Credit Record
-          form(action="/credit/products" method="post")
+          h4.text- New Credit Record
+          form(action="/credit/add" method="post")
             .form-group.mb-3
               label Supplier Name
               input.form-control(type="text" name="supplierName" required)
@@ -29,8 +28,8 @@ block content
       //- Table: Credit List
       .col-lg-8
         .glass-card
-          h4.text-cyan Active Credits
-          table.nyondo-table
+          h4.text- Active Credits
+          table.table.table-white.table-sm.mb-0
             thead
               tr
                 th SupplierName 
@@ -53,5 +52,5 @@ block content
                       form(action=`/credit/pay/${c._id}` method="post" style="display:inline;")
                         button.btn-cyan(style="padding: 5px 10px; font-size: 0.7rem;") MARK PAID
                     else
-                      span.text-muted Completed
+                      span.text- Completed
 

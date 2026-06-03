@@ -4,10 +4,7 @@ const Product = require("../models/stocks");
 const Sale = require("../models/sales");
 const { ensureAuthenticated, ensureRole } = require("../middleware/auth");
 
-/**
- * @route   GET /sales
- * @desc    Display Sales Point (Inventory list and recent personal sales log)
- */
+
 router.get("/", ensureAuthenticated, ensureRole('attendant'), async (req, res) => {
     try {
         const [inventory, sales] = await Promise.all([
@@ -33,53 +30,59 @@ router.get("/", ensureAuthenticated, ensureRole('attendant'), async (req, res) =
 
 router.post("/product", ensureAuthenticated, ensureRole('attendant'), async (req, res) => {
     try {
-        const { productId, quantitySold, distanceKm, customerName, customerContact } = req.body;
-        const qty = parseInt(quantitySold);
 
-        // 1. Atomic Update: Check stock and decrement in one operation
-        // This prevents overselling even without transactions
-        const updatedProduct = await Product.findOneAndUpdate(
-            { _id: productId, quantity: { $gte: qty } },
-            { $inc: { quantity: -qty } },
-            { new: true }
-        );
+        const phone = customerContact?.trim();
 
-        if (!updatedProduct) {
-            return res.redirect(`/sales?error=${encodeURIComponent("Insufficient stock or product unavailable.")}`);
+        if (!/^(07|03)\d{8}$/.test(phone)) {
+            return res.status(400).send(
+                "Invalid Ugandan phone number. Use format 0701234567 or 0391234567"
+            );
         }
-
-        // 2. Automated Financial Calculations
+        const { customerName, customerContact, distanceKm, cartData } = req.body;
+        const items = JSON.parse(cartData);
         const dist = parseFloat(distanceKm || 0);
-        const transportFee = dist * 3000; 
-        const totalAmount = (qty * updatedProduct.retailPrice) + transportFee;
+        const warnings = [];
+        // 1. Calculate TOTAL transport for the whole trip
+        const totalTransportFee = dist * 3000; 
 
-        // 3. Create Sale Record
-        const savedSale = await Sale.create({
-            product: updatedProduct._id,
-            itemName: updatedProduct.itemName,
-            customerName,
-            customerContact,
-            quantitySold: qty,
-            unitPrice: updatedProduct.retailPrice,
-            distanceKm: dist,
-            transportFee,
-            totalAmount,
-            branch: req.user.branch || "Entebbe",
-            salesAttendant: req.user._id,
-            saleDate: new Date()
+        const salePromises = items.map(async (item, index) => {
+            const updatedProduct = await Product.findOneAndUpdate(
+                { _id: item.productId, quantity: { $gte: item.quantitySold } },
+                { $inc: { quantity: -item.quantitySold } },
+                { new: true }
+            );
+
+            if (!updatedProduct) throw new Error(`Stock low for ${item.itemName}`);
+
+            
+            const transportForThisRecord = (index === 0) ? totalTransportFee : 0;
+
+            console.log("req.user =", req.user);
+
+            return Sale.create({
+                product: updatedProduct._id,
+                itemName: updatedProduct.itemName,
+                customerName,
+                customerContact,
+                quantitySold: item.quantitySold,
+                unitPrice: updatedProduct.retailPrice,
+                distanceKm: dist,
+                transportFee: transportForThisRecord, 
+                totalAmount: (item.quantitySold * updatedProduct.retailPrice) + transportForThisRecord,
+                branch: req.user.branch || "Entebbe",
+                salesAttendant: req.user._id,
+                saleDate: new Date()
+            });
         });
 
-        res.redirect(`/sales/receipt/${savedSale._id}`);
-
+        const completedSales = await Promise.all(salePromises);
+        res.redirect(`/sales/receipt/${completedSales[0]._id}`);
     } catch (err) {
-        console.error("Sale Error:", err.message);
-        res.redirect(`/sales?error=${encodeURIComponent("An error occurred during processing.")}`);
+        res.status(500).send(err.message);
     }
+
 });
 
-/**
- * @route   GET /sales/receipt/:id
- */
 router.get("/receipt/:id", ensureAuthenticated, async (req, res) => {
     try {
         const sale = await Sale.findById(req.params.id)
@@ -115,7 +118,8 @@ router.get("/log", ensureAuthenticated, ensureRole('attendant'), async (req, res
                         $push: { 
                             name: "$itemName", 
                             qty: "$quantitySold", 
-                            amount: "$totalAmount" 
+                            transportFee: "$transportFee",
+                            amount: "$totalAmount", 
                         } 
                     }
                 }
@@ -164,3 +168,8 @@ router.get("/stock-log", ensureAuthenticated, ensureRole('attendant'), async (re
     }
 });
 module.exports = router;
+
+
+
+   
+                                       

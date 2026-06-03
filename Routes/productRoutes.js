@@ -5,7 +5,7 @@ const path = require('path');
 const Product = require('../models/Product');
 const { ensureAuthenticated, ensureRole } = require('../middleware/auth');
 
-// --- SECURE MULTER CONFIGURATION ---
+// --- SECURE MULTER CONFIGURATION PHOTOS ---
 const storage = multer.diskStorage({
     destination: './public/uploads/',
     filename: (req, file, cb) => {
@@ -26,7 +26,9 @@ const upload = multer({
     }
 });
 
+// --- ROUTES ---
 
+// GET: List all products
 router.get('/', ensureAuthenticated, ensureRole('manager'), async (req, res) => {
     try {
         const products = await Product.find().sort({ itemName: 1 }).lean();
@@ -35,6 +37,7 @@ router.get('/', ensureAuthenticated, ensureRole('manager'), async (req, res) => 
             products,
             success: req.query.status === 'success',
             updated: req.query.status === 'updated',
+            deleted: req.query.status === 'deleted',
             error: req.query.error
         });
     } catch (err) {
@@ -42,12 +45,11 @@ router.get('/', ensureAuthenticated, ensureRole('manager'), async (req, res) => 
     }
 });
 
-
+// POST: Add New Product
 router.post('/product', ensureAuthenticated, ensureRole('manager'), upload.single('productImage'), async (req, res) => {
     try {
         const { itemName, category, quantity, costPrice, retailPrice, lowStockLevel } = req.body;
 
-        // Profitability Logic Check
         if (parseFloat(costPrice) >= parseFloat(retailPrice)) {
             return res.redirect(`/products?error=${encodeURIComponent("Cost price must be lower than retail price.")}`);
         }
@@ -59,58 +61,72 @@ router.post('/product', ensureAuthenticated, ensureRole('manager'), upload.singl
             costPrice: parseFloat(costPrice),
             retailPrice: parseFloat(retailPrice),
             lowStockLevel: parseInt(lowStockLevel || 5),
-            productImage: req.file ? req.file.filename : 'no-image.jpg'
+            productImage: req.file ? req.file.filename : 'no-image.jpg',
+            // Set initial timestamps for intelligence badges
+            lastStocked: Date.now(),
+            lastPriceUpdate: Date.now()
         });
 
         await newProduct.save();
         res.redirect('/products?status=success');
-
     } catch (err) {
-        console.error("Add Product Error:", err);
         res.redirect(`/products?error=${encodeURIComponent(err.message)}`);
     }
+
+      const phoneRegex = /^\d{10}$/;
+      if (!phoneRegex.test(phone)) {
+        return res.redirect(`/products?error=${encodeURIComponent("Invalid phone number format. Must be 10 digits  Ugandan Phone Number .")}`);
+      }
 });
 
+// GET: Edit Product Form
 router.get('/edit/:id', ensureAuthenticated, ensureRole('manager'), async (req, res) => {
     try {
         const item = await Product.findById(req.params.id).lean();
         if (!item) return res.status(404).send("Product not found");
-
-        res.render('edit_price', { 
-            title: 'Update Product Details', 
-            item 
-        });
+        res.render('edit_price', { title: 'Update Product Details', item });
     } catch (err) {
-    console.error("EDIT PRODUCT ERROR:", err);
-    res.status(500).send(err.message);
-}
+        res.status(500).send(err.message);
+    }
 });
 
+// POST: Update Product (with Intelligence Tracking)
 router.post('/edit/:id', ensureAuthenticated, ensureRole('manager'), upload.single('productImage'), async (req, res) => {
     try {
-        const { costPrice, retailPrice } = req.body;
-        const updateData = { ...req.body };
+        const { costPrice, retailPrice, quantity } = req.body;
+        const oldProduct = await Product.findById(req.params.id);
+        
+        if (!oldProduct) return res.status(404).send("Product not found");
 
-        // Validation: Prevent loss-making updates
         if (parseFloat(costPrice) >= parseFloat(retailPrice)) {
             return res.redirect(`/products/edit/${req.params.id}?error=PriceMismatch`);
         }
-        
-        // Handle image update if new file is uploaded
+
+        const updateData = { ...req.body };
+
+        // --- STOCK INTELLIGENCE LOGIC ---
+        // 1. Detect Price Change
+        if (parseFloat(retailPrice) !== oldProduct.retailPrice) {
+            updateData.lastPriceUpdate = Date.now();
+        }
+
+        // 2. Detect Manual Stock Increase (Restock via Edit form)
+        if (parseInt(quantity) > oldProduct.quantity) {
+            updateData.lastStocked = Date.now();
+        }
+
         if (req.file) {
             updateData.productImage = req.file.filename;
         }
 
         await Product.findByIdAndUpdate(req.params.id, updateData);
         res.redirect('/products?status=updated');
-
     } catch (err) {
-    console.error("EDIT PRODUCT ERROR:", err);
-    res.status(500).send(err.message);
-}
+        res.status(500).send(err.message);
+    }
 });
 
-
+// POST: Delete Product
 router.post('/delete/:id', ensureAuthenticated, ensureRole('manager'), async (req, res) => {
     try {
         await Product.findByIdAndDelete(req.params.id);
@@ -122,8 +138,12 @@ router.post('/delete/:id', ensureAuthenticated, ensureRole('manager'), async (re
 
 // GET: View the Restock Form
 router.get("/restock", ensureAuthenticated, ensureRole('manager'), async (req, res) => {
-    const products = await Product.find().sort({ itemName: 1 });
-    res.render("restock", { title: "Inventory Restock", products });
+    try {
+        const products = await Product.find().sort({ itemName: 1 }).lean();
+        res.render("restock", { title: "Inventory Restock", products });
+    } catch (err) {
+        res.status(500).send("Error loading restock form.");
+    }
 });
 
 // POST: Process the Restock
@@ -131,13 +151,12 @@ router.post("/restock", ensureAuthenticated, ensureRole('manager'), async (req, 
     try {
         const { productId, addedQuantity } = req.body;
         
-        // Find the product and increment the quantity
         await Product.findByIdAndUpdate(productId, {
-            $inc: { quantity: parseInt(addedQuantity) }, // Adds to existing stock
-            $set: { lastStocked: Date.now() }            // Triggers the "RESTOCKED" badge
+            $inc: { quantity: parseInt(addedQuantity) },
+            $set: { lastStocked: new Date() } // Forces "RESTOCKED" badge in log
         });
 
-        res.redirect("/products/inventory?msg=RestockSuccess");
+        res.redirect("/products?status=updated");
     } catch (err) {
         res.status(500).send("Error updating stock.");
     }
