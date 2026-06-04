@@ -18,6 +18,25 @@ block content
               label Item/Description
               input.form-control(type="text" name="item" required)
             .form-group.mb-3
+              label Quantity
+              input.form-control(type="number" name="quantity" required)
+            .form-group.mb-3
+              label.small.text- Unit
+              select.form-select.bg-dark.text-white(name="unit" required min="1" placeholder="e.g. Piece")
+                  option(value="") -- Select Unit --
+                  option(value="Kg") Kilogram
+                  option(value="Bag") Bag
+                  option(value="Piece") Piece
+                  option(value="Litre") Litre
+                  option(value="Pair") Pair
+                  option(value="Roll") Roll
+                  option(value="Box") Box
+                  option(value="Meter") Meter
+                  option(value="Foot") Foot
+                  option(value="Ton") Ton
+                  option(value="Packet") Packet
+                  option(value="Sheet") Sheet
+            .form-group.mb-3
               label Amount Owed (UGX)
               input.form-control.blue-input(type="number" name="amountOwed" required)
             .form-group.mb-3
@@ -43,7 +62,7 @@ block content
                 tr
                   td #{c.supplierName}
                   td #{c.item}
-                  td.text-cyan #{c.amountOwed.toLocaleString()}
+                  td #{c.amountOwed.toLocaleString()}
                   td #{c.dueDate.toLocaleDateString()}
                   td
                     span(style=`color: ${c.status === 'Paid' ? 'var(--success-green)' : 'orange'}`) #{c.status}

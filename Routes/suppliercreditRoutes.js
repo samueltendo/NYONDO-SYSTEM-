@@ -26,11 +26,13 @@ router.get('/', ensureAuthenticated, ensureRole('Admin'), async (req, res) => {
 // POST: Record New Supplier Credit
 router.post('/add', ensureAuthenticated, ensureRole('Admin'), async (req, res) => {
     try {
-        const { supplierName, item, amountOwed, dueDate } = req.body;
+        const { supplierName, item, amountOwed, dueDate , quantity, unit } = req.body;
 
         const newCredit = new Credit({
             supplierName,
             item,
+            quantity,
+            unit,
             amountOwed: parseFloat(amountOwed),
             dueDate
         });
@@ -38,6 +40,7 @@ router.post('/add', ensureAuthenticated, ensureRole('Admin'), async (req, res) =
         await newCredit.save();
         res.redirect('/credit');
     } catch (err) {
+        console.error("Error saving credit:", err);
         const credits = await Credit.find();
         res.render('supplierCredit', { 
             credits, 

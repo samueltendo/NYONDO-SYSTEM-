@@ -30,7 +30,7 @@ router.get("/", ensureAuthenticated, ensureRole('attendant'), async (req, res) =
 
 router.post("/product", ensureAuthenticated, ensureRole('attendant'), async (req, res) => {
     try {
-
+        const { customerName, customerContact, cartData, distanceKm } = req.body;
         const phone = customerContact?.trim();
 
         if (!/^(07|03)\d{8}$/.test(phone)) {
@@ -38,7 +38,6 @@ router.post("/product", ensureAuthenticated, ensureRole('attendant'), async (req
                 "Invalid Ugandan phone number. Use format 0701234567 or 0391234567"
             );
         }
-        const { customerName, customerContact, distanceKm, cartData } = req.body;
         const items = JSON.parse(cartData);
         const dist = parseFloat(distanceKm || 0);
         const warnings = [];
