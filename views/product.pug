@@ -11,15 +11,34 @@ block content
         a.btn-cyan.btn-info.btn-sm(href="/manager_dashboard")  Back to Manager Dashboard
 
     .row
-      //-  Registration Form
+      //- Registration Form
       .col-lg-4
         .glass-card.mb-4
           h5.text- Register New Stock
-          if error
-            .alert.alert-danger.py-2.small #{error}
           
-          //-    enctyptions for file uploads
-          form(action="/product/" method="POST" enctype="multipart/form-data")
+          //- 1. SUCCESS NOTIFICATION (For New Stock)
+          if success
+            .alert.alert-success.alert-dismissible.fade.show.py-2.small(role="alert")
+              i.bi.bi-check-circle-fill.me-2
+              strong Done! 
+              | Stock registered in database.
+              button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Close" style="padding: 0.5rem;")
+
+          //- 2. UPDATE NOTIFICATION (For Edits/Restocks)
+          if updated
+            .alert.alert-info.alert-dismissible.fade.show.py-2.small(role="alert")
+              i.bi.bi-info-circle-fill.me-2
+              | Inventory updated successfully.
+              button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Close" style="padding: 0.5rem;")
+
+          //- 3. ERROR NOTIFICATION
+          if error
+            .alert.alert-danger.alert-dismissible.fade.show.py-2.small(role="alert")
+              i.bi.bi-exclamation-triangle-fill.me-2
+              | #{error}
+              button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Close" style="padding: 0.5rem;")
+          
+          form(action="/products/product" method="POST" enctype="multipart/form-data")
             .mb-3
               label.small.text- Item Name
               input.form-control.bg-dark.text-white(name="itemName" required placeholder="e.g. Iron Sheets")
@@ -65,6 +84,10 @@ block content
                   option(value="Ton") Ton
                   option(value="Packet") Packet
                   option(value="Sheet") Sheet
+            .row
+              .col-6.mb-3
+                label.small.text- Quantity
+                input.form-control.bg-dark.text-white(type="number" name="quantity" required min="0")
               
             
             .row

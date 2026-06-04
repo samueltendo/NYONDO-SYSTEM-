@@ -6,7 +6,7 @@ block content
     p.text.mb-4 Monitor inventory levels, identify best sellers, and track items nearing expiry or low stock.
 
     .row.g-4
-      //- Card 1: Best Sellers
+      //-  Best Sellers
       .col-md-6.col-xl-3
         .glass-card.p-3.border-success
           h6.text-success.small.fw-bold BEST SELLERS (30D)
@@ -15,7 +15,18 @@ block content
               span.small #{item._id}
               span.badge.bg-success #{item.totalSold} sold
 
-      //- Card 2: Low Stock
+      //-  Recently Added
+      .col-md-6.col-xl-3
+        .glass-card.p-3.border-primary
+          h6.text-primary.small.fw-bold  RECENTLY ADDED (7D)
+          each item in recentlyAdded
+            .d-flex.justify-content-between.mb-1
+              span.small #{item.itemName}
+              span.small.text-primary.fw-bold Added #{item.dateAdded.toLocaleDateString()}
+            p.text-muted.small No new stock added in the last 7 days.
+            
+
+      //-  Low Stock
       .col-md-6.col-xl-3
         .glass-card.p-3.border-danger
           h6.text-danger.small.fw-bold  REORDER REQUIRED
@@ -24,7 +35,7 @@ block content
               span.small #{item.itemName}
               span.text-danger.fw-bold #{item.quantity} left
 
-      //- Card 3: Expiring Soon
+      //-  Expiring Soon
       .col-md-6.col-xl-3
         .glass-card.p-3.border-warning
           h6.text-warning.small.fw-bold  EXPIRING (<30D)
@@ -33,7 +44,7 @@ block content
               span.small #{item.itemName}
               span.extra-small.text-warning #{item.expiryDate.toLocaleDateString()}
 
-      //- Card 4: Overstayed / Dead Stock
+      //-  Overstayed / Dead Stock
       .col-md-6.col-xl-3
         .glass-card.p-3.border-info
           h6.text-info.small.fw-bold  OVERSTAYED  STOCK (>90D)
@@ -54,6 +65,13 @@ block content
               th RETAIL PRICE
               th STATUS
           tbody
+            each item in recentlyAdded
+              tr
+                td #{item.itemName}
+                td #{item.category}
+                td #{item.quantity}
+                td UGX #{item.retailPrice.toLocaleString()}
+                td: span.badge.bg-primary RECENTLY ADDED
             each item in overstayed
               tr
                 td #{item.itemName}

@@ -39,41 +39,47 @@ router.get('/', ensureAuthenticated, ensureRole('manager'), async (req, res) => 
 
 router.get("/TrackStock", ensureAuthenticated, ensureRole('manager'), async (req, res) => {
     try {
-        const today = new Date();
-        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const now = new Date();
+        const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
         const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-        // 1. BEST SELLING (Top 5 items by quantity sold in last 30 days)
+        const allProducts = await Product.find().lean();
+
+        // 1. BEST SELLING
         const bestSellers = await Sale.aggregate([
-            { $match: { saleDate: { $gte: thirtyDaysAgo } } },
+            { $match: { saleDate: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } } },
             { $group: { _id: "$itemName", totalSold: { $sum: "$quantitySold" } } },
             { $sort: { totalSold: -1 } },
             { $limit: 5 }
         ]);
 
-        // 2. LOW STOCK & EXPIRING SOON
-        const allProducts = await Product.find().lean();
-        
-        const lowStock = allProducts.filter(p => p.quantity <= p.lowStockLevel);
-        
+        // RECENTLY ADDED ( new stock)
+        const recentlyAdded = allProducts.filter(p => p.dateAdded >= sevenDaysAgo);
+
+        //  LOW STOCK
+        const lowStock = allProducts.filter(p => p.quantity <= (p.lowStockLevel || 5));
+
+        // EXPIRING SOON (Between now and 30 days)
         const expiringSoon = allProducts.filter(p => 
-            p.expiryDate && (p.expiryDate <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000))
+            p.expiryDate && new Date(p.expiryDate) <= thirtyDaysFromNow && new Date(p.expiryDate) >= now
         );
 
-        // 3. OVERSTAYED (Dead Stock: Items added 90+ days ago with > 80% stock remaining)
-        const overstayed = allProducts.filter(p => p.dateAdded <= ninetyDaysAgo && p.quantity > 0);
+        //  OVERSTAYED (90+ days old)
+        const overstayed = allProducts.filter(p => new Date(p.dateAdded) <= ninetyDaysAgo);
 
         res.render("TrackStock", {
             title: "Stock Tracking",
             bestSellers,
+            recentlyAdded, 
             lowStock,
             expiringSoon,
-            overstayed
+            overstayed,
+            user: req.user
         });
     } catch (err) {
-    console.error("TRACK STOCK ERROR:", err);
-    res.status(500).send(err.message);
-}
+        console.error("TRACK STOCK ERROR:", err);
+        res.status(500).send(err.message);
+    }
 });
-
 module.exports = router;

@@ -48,7 +48,7 @@ router.get('/', ensureAuthenticated, ensureRole('manager'), async (req, res) => 
 // POST: Add New Product
 router.post('/product', ensureAuthenticated, ensureRole('manager'), upload.single('productImage'), async (req, res) => {
     try {
-        const { itemName, category, quantity, costPrice, retailPrice, lowStockLevel } = req.body;
+        const { itemName, category, quantity, costPrice, retailPrice, lowStockLevel, unit } = req.body;
 
         if (parseFloat(costPrice) >= parseFloat(retailPrice)) {
             return res.redirect(`/products?error=${encodeURIComponent("Cost price must be lower than retail price.")}`);
@@ -57,12 +57,12 @@ router.post('/product', ensureAuthenticated, ensureRole('manager'), upload.singl
         const newProduct = new Product({
             itemName,
             category,
+            unit,
             quantity: parseInt(quantity),
             costPrice: parseFloat(costPrice),
             retailPrice: parseFloat(retailPrice),
             lowStockLevel: parseInt(lowStockLevel || 5),
             productImage: req.file ? req.file.filename : 'no-image.jpg',
-            // Set initial timestamps for intelligence badges
             lastStocked: Date.now(),
             lastPriceUpdate: Date.now()
         });
@@ -70,13 +70,9 @@ router.post('/product', ensureAuthenticated, ensureRole('manager'), upload.singl
         await newProduct.save();
         res.redirect('/products?status=success');
     } catch (err) {
+        console.error(err);
         res.redirect(`/products?error=${encodeURIComponent(err.message)}`);
     }
-
-      const phoneRegex = /^\d{10}$/;
-      if (!phoneRegex.test(phone)) {
-        return res.redirect(`/products?error=${encodeURIComponent("Invalid phone number format. Must be 10 digits  Ugandan Phone Number .")}`);
-      }
 });
 
 // GET: Edit Product Form
@@ -86,6 +82,7 @@ router.get('/edit/:id', ensureAuthenticated, ensureRole('manager'), async (req, 
         if (!item) return res.status(404).send("Product not found");
         res.render('edit_price', { title: 'Update Product Details', item });
     } catch (err) {
+        console.error(err);
         res.status(500).send(err.message);
     }
 });
@@ -105,12 +102,12 @@ router.post('/edit/:id', ensureAuthenticated, ensureRole('manager'), upload.sing
         const updateData = { ...req.body };
 
         // --- STOCK INTELLIGENCE LOGIC ---
-        // 1. Detect Price Change
+        // Detect Price Change
         if (parseFloat(retailPrice) !== oldProduct.retailPrice) {
             updateData.lastPriceUpdate = Date.now();
         }
 
-        // 2. Detect Manual Stock Increase (Restock via Edit form)
+        //  Detect Stock Increase (Restock via Edit form)
         if (parseInt(quantity) > oldProduct.quantity) {
             updateData.lastStocked = Date.now();
         }
@@ -122,6 +119,7 @@ router.post('/edit/:id', ensureAuthenticated, ensureRole('manager'), upload.sing
         await Product.findByIdAndUpdate(req.params.id, updateData);
         res.redirect('/products?status=updated');
     } catch (err) {
+        console.error(err);
         res.status(500).send(err.message);
     }
 });
@@ -132,6 +130,7 @@ router.post('/delete/:id', ensureAuthenticated, ensureRole('manager'), async (re
         await Product.findByIdAndDelete(req.params.id);
         res.redirect('/products?status=deleted');
     } catch (err) {
+        console.error(err);
         res.redirect('/products?error=delete_failed');
     }
 });
@@ -142,6 +141,7 @@ router.get("/restock", ensureAuthenticated, ensureRole('manager'), async (req, r
         const products = await Product.find().sort({ itemName: 1 }).lean();
         res.render("restock", { title: "Inventory Restock", products });
     } catch (err) {
+        console.error(err);
         res.status(500).send("Error loading restock form.");
     }
 });
