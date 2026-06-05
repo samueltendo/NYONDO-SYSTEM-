@@ -14,20 +14,19 @@ const User = require("./models/Users");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// 1. DATABASE CONNECTION
-// Using your config/db.js logic exclusively
+// DATABASE CONNECTION
 connectDB();
 
-// 2. SET UP VIEW ENGINE (PUG)
+//  SET UP VIEW ENGINE (PUG)
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
-// 3. MIDDLEWARE & STATIC ASSETS
+//  MIDDLEWARE & STATIC ASSETS
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// 4. SESSION CONFIGURATION (Must come BEFORE Passport)
+// SESSION CONFIGURATION (come BEFORE Passport)
 app.use(
   session({
     name: "nyondo.sid",
@@ -41,7 +40,7 @@ app.use(
   }),
 );
 
-// 5. PASSPORT CONFIGURATION
+//  PASSPORT CONFIGURATION
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -78,14 +77,14 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-// 6. GLOBAL VIEW VARIABLES
+//  GLOBAL VIEW VARIABLES
 // Injects 'user' into every PUG file so Navbar/Sidebar can see role-based access
 app.use((req, res, next) => {
   res.locals.user = req.user || null;
   next();
 });
 
-// 7. IMPORT ROUTERS
+//  IMPORT ROUTERS
 const indexRoutes = require("./routes/indexRoutes");
 const authRoutes = require("./routes/authRoutes");
 const productRoutes = require("./routes/productRoutes");
@@ -100,9 +99,9 @@ const managerdashboardRoutes = require("./routes/manager_dashboard");
 const userRoutes = require('./routes/userRoutes');
 
 
-// 8. MOUNT ROUTES
+// MOUNT ROUTES
 app.use("/", indexRoutes);
-app.use("/auth", authRoutes); // Use /auth as the base for login/logout
+app.use("/auth", authRoutes); // auth as the base for login/logout
 
 // Core Business Modules
 app.use("/dashboard", dashboardRoutes); // Main Dashboard (Admin )
@@ -112,18 +111,19 @@ app.use("/register", authRoutes); // Staff Registration (Admin Only)
 app.use("/products", productRoutes); // Product Management
 
 // Financial & Secondary Modules
-app.use("/reports", reportsRoutes); // Analytics
-app.use("/credit", creditRoutes); // Debt Tracking
+app.use("/reports", reportsRoutes); // reports
+app.use("/credit", creditRoutes); // credit Tracking
 app.use("/deposits", depositsRoutes); // Savings Schemes
 app.use("/sales_dashboard", slasdashboardRoutes); // Sales Dashboard
 app.use("/manager_dashboard", managerdashboardRoutes); // Manager Dashboard
 app.use('/users', userRoutes);
-// 9. HELPER ROUTES
+
+//  HELPER ROUTES
 app.get("/transport", (req, res) => {
   res.render("layout", { title: "Transport Logs" });
 });
 
-// 10. ERROR HANDLING (404 Page)
+//  ERROR HANDLING (404 Page)
 app.use((req, res) => {
   res.status(404).render("layout", {
     title: "404 - Page Not Found",
@@ -131,7 +131,7 @@ app.use((req, res) => {
   });
 });
 
-// 11. START SERVER
+//  START SERVER
 app.listen(port, () => {
   console.log(`-----------------------------------------------`);
   console.log(` NYONDOSTOCK SYSTEM IS LIVE`);
