@@ -13,13 +13,13 @@ block content
           form(action="/credit/add" method="post")
             .form-group.mb-3
               label Supplier Name
-              input.form-control(type="text" name="supplierName" required)
+              input.form-control(type="text" name="supplierName" title="Enter the supplier's name" required)
             .form-group.mb-3
               label Item/Description
-              input.form-control(type="text" name="item" required)
+              input.form-control(type="text" name="item" title="Enter the item or description" required)
             .form-group.mb-3
               label Quantity
-              input.form-control(type="number" name="quantity" required)
+              input.form-control(type="number" name="quantity" title="Enter the quantity" required)
             .form-group.mb-3
               label.small.text- Unit
               select.form-select.bg-dark.text-white(name="unit" required min="1" placeholder="e.g. Piece")
@@ -38,10 +38,10 @@ block content
                   option(value="Sheet") Sheet
             .form-group.mb-3
               label Amount Owed (UGX)
-              input.form-control.blue-input(type="number" name="amountOwed" required)
+              input.form-control.blue-input(type="number" name="amountOwed" title="Enter the amount owed" required)
             .form-group.mb-3
               label Due Date
-              input.form-control(type="date" name="dueDate" required)
+              input.form-control(type="date" name="dueDate" title="Select the due date" required)
             button.btn-cyan.w-100(type="submit") Save Credit Record
 
       //- Table: Credit List

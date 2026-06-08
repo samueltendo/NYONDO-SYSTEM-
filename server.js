@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// SESSION CONFIGURATION (come BEFORE Passport)
+// SESSION CONFIGURATION
 app.use(
   session({
     name: "nyondo.sid",
@@ -78,7 +78,7 @@ passport.deserializeUser(async (id, done) => {
 });
 
 //  GLOBAL VIEW VARIABLES
-// Injects 'user' into every PUG file so Navbar/Sidebar can see role-based access
+// Injects 'user' into every PUG file so Navbar can see role-based access
 app.use((req, res, next) => {
   res.locals.user = req.user || null;
   next();
